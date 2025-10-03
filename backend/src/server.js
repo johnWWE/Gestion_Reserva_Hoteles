@@ -4,6 +4,10 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const { sequelize } = require("./models"); // importamos index.js de models
 const testRoutes = require("./routes/test");
+const usuarios = require("./routes/usuarios");
+const hoteles = require("./routes/hoteles");
+const habitaciones = require("./routes/habitaciones");
+const reservas = require("./routes/reservas");
 
 
 const app = express();
@@ -14,7 +18,10 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 app.use("/api", testRoutes);
-
+app.use("/usuarios", usuarios);
+app.use("/hotels", hoteles);
+app.use("/habitaciones", habitaciones);
+app.use("/reservas", reservas);
 // Rutas de prueba (temporal)
 app.get("/", (req, res) => {
   res.json({ mensaje: "🚀 API de Reservas de Hoteles funcionando!" });

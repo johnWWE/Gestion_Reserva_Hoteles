@@ -1,23 +1,41 @@
 const express = require("express");
-const router = express.Router();
 const { Reserva } = require("../models");
-const authMiddleware = require("../middlewares/authMiddleware");
 
-// Crear reserva (cliente)
-router.post("/", authMiddleware(["cliente", "admin"]), async (req, res) => {
-  const reserva = await Reserva.create({
-    ...req.body,
-    userId: req.user.id,
-  });
-  res.status(201).json(reserva);
+const router = express.Router();
+
+// Crear reserva
+router.post("/", async (req, res) => {
+  try {
+    const reserva = await Reserva.create(req.body);
+    res.json(reserva);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-// Ver reservas de un usuario
-router.get("/", authMiddleware(["cliente", "admin"]), async (req, res) => {
-  const reservas = await Reserva.findAll({
-    where: { userId: req.user.id },
-  });
+// Listar todas
+router.get("/", async (req, res) => {
+  const reservas = await Reserva.findAll();
   res.json(reservas);
 });
 
+// Obtener por ID
+router.get("/:id", async (req, res) => {
+  const reserva = await Reserva.findByPk(req.params.id);
+  reserva ? res.json(reserva) : res.status(404).json({ error: "Reserva no encontrada" });
+});
+
+// Actualizar
+router.put("/:id", async (req, res) => {
+  const [updated] = await Reserva.update(req.body, { where: { id: req.params.id } });
+  updated ? res.json({ message: "Reserva actualizada" }) : res.status(404).json({ error: "Reserva no encontrada" });
+});
+
+// Eliminar
+router.delete("/:id", async (req, res) => {
+  const deleted = await Reserva.destroy({ where: { id: req.params.id } });
+  deleted ? res.json({ message: "Reserva eliminada" }) : res.status(404).json({ error: "Reserva no encontrada" });
+});
+
 module.exports = router;
+
