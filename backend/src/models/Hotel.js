@@ -1,26 +1,18 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
-
 
 module.exports = (sequelize) => {
-  return sequelize.define("Hotel", {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+  const Hotel = sequelize.define(
+    "Hotel",
+    {
+      id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+      nombre: { type: DataTypes.STRING, allowNull: false },
+      direccion: { type: DataTypes.STRING, allowNull: false },
+      estrellas: { type: DataTypes.INTEGER, allowNull: false },
     },
-    nombre: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    direccion: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    ciudad: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  });
+    {
+      tableName: "hotels", // 👈 nombre fijo en minúscula
+      timestamps: true,
+    }
+  );
+  return Hotel;
 };
-
