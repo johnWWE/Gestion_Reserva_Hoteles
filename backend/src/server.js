@@ -12,7 +12,9 @@ const app = express();
 app.use(express.json());
 app.use(helmet());
 app.use(morgan("dev"));
+
 app.use("/api", testRoutes);
+
 // Rutas de prueba (temporal)
 app.get("/", (req, res) => {
   res.json({ mensaje: "🚀 API de Reservas de Hoteles funcionando!" });
