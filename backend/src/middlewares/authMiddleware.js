@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const authMiddleware = (rolesPermitidos = []) => {
   return (req, res, next) => {

@@ -18,7 +18,7 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 app.use("/api", testRoutes);
-app.use("/usuarios", usuarios);
+app.use("/users", usuarios);
 app.use("/hotels", hoteles);
 app.use("/habitaciones", habitaciones);
 app.use("/reservas", reservas);
