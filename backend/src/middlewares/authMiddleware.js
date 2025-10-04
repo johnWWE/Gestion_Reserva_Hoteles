@@ -1,23 +1,31 @@
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
 
-const authMiddleware = (rolesPermitidos = []) => {
+// Middleware para verificar token
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) return res.status(401).json({ error: "Acceso denegado, token faltante" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: "Token inválido" });
+
+    req.user = user; // lo que pusimos en el payload del token
+    next();
+  });
+}
+
+// Middleware para verificar rol
+function authorizeRole(roles = []) {
   return (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
-    if (!token) return res.status(401).json({ error: "Token requerido" });
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (err) return res.status(403).json({ error: "Token inválido" });
-
-      if (rolesPermitidos.length && !rolesPermitidos.includes(user.rol)) {
-        return res.status(403).json({ error: "Acceso denegado" });
-      }
-
-      req.user = user;
-      next();
-    });
+    if (!roles.includes(req.user.rol)) {
+      return res.status(403).json({ error: "No tienes permisos para acceder a esta ruta" });
+    }
+    next();
   };
-};
+}
 
-module.exports = authMiddleware;
+module.exports = { authenticateToken, authorizeRole };
+
+
+

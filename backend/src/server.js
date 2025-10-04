@@ -8,8 +8,8 @@ const usuarios = require("./routes/usuarios");
 const hoteles = require("./routes/hoteles");
 const habitaciones = require("./routes/habitaciones");
 const reservas = require("./routes/reservas");
-
-
+const auth = require("./routes/auth");
+const { authenticateToken, authorizeRole } = require("./middlewares/authMiddleware");
 const app = express();
 
 // Middlewares
@@ -22,11 +22,19 @@ app.use("/users", usuarios);
 app.use("/hotels", hoteles);
 app.use("/habitaciones", habitaciones);
 app.use("/reservas", reservas);
+app.use("/auth", auth);
 // Rutas de prueba (temporal)
 app.get("/", (req, res) => {
   res.json({ mensaje: "🚀 API de Reservas de Hoteles funcionando!" });
 });
 
+
+app.get("/me", authenticateToken, (req, res) => {
+  res.json({ userId: req.user.id, rol: req.user.rol });
+});
+app.delete("/usuarios/:id", authenticateToken, authorizeRole(["admin"]), (req, res) => {
+  res.json({ message: "Usuario eliminado (solo admin)" });
+});
 // Sincronizar DB y arrancar servidor
 const PORT = process.env.PORT || 3000;
 

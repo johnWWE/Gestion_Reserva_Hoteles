@@ -11,13 +11,13 @@ const Habitacion = HabitacionModel(sequelize);
 const Reserva = ReservaModel(sequelize);
 
 // Relaciones
-Hotel.hasMany(Habitacion, { foreignKey: "hotelId" });
+Hotel.hasMany(Habitacion, { foreignKey: "hotelId",onDelete:"CASCADE" });
 Habitacion.belongsTo(Hotel, { foreignKey: "hotelId" });
 
-User.hasMany(Reserva, { foreignKey: "userId" });
+User.hasMany(Reserva, { foreignKey: "userId",onDelete:"SET NULL" });
 Reserva.belongsTo(User, { foreignKey: "userId" });
 
-Habitacion.hasMany(Reserva, { foreignKey: "habitacionId" });
+Habitacion.hasMany(Reserva, { foreignKey: "habitacionId",onDelete:"CASCADE" });
 Reserva.belongsTo(Habitacion, { foreignKey: "habitacionId" });
 
 module.exports = { sequelize, User, Hotel, Habitacion, Reserva };
