@@ -11,7 +11,8 @@ const reservas = require("./routes/reservas");
 const auth = require("./routes/auth");
 const { authenticateToken, authorizeRole } = require("./middlewares/authMiddleware");
 const app = express();
-
+const cors = require("cors");
+app.use(cors()); // Permite todas las origins en desarrollo
 // Middlewares
 app.use(express.json());
 app.use(helmet());

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hoteles · ReservaHoteles</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-grid">
+      <div class="brand">
+        <h1>Hoteles</h1>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Inicio</a>
+        <a href="login.html" id="link-login">Login</a>
+        <button id="btn-logout" class="btn small" hidden>Salir</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <input id="search" placeholder="Buscar por ciudad o nombre..." aria-label="Buscar hoteles"/>
+    </section>
+
+    <section id="hotelsList" class="grid-cards" aria-live="polite"></section>
+  </main>
+
+  <script type="module" src="js/hotels.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hotel · ReservaHoteles</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main class="container">
+    <a href="hotels.html" class="btn small">← Volver</a>
+    <section id="hotelDetail"></section>
+
+    <section id="roomsList" class="grid-cards"></section>
+
+    <div id="reserveModal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-content">
+        <h3>Reservar habitación</h3>
+        <form id="reserveForm" class="form">
+          <input type="hidden" id="habitacionId" />
+          <label for="fechaInicio">Fecha inicio</label>
+          <input id="fechaInicio" type="date" required />
+          <label for="fechaFin">Fecha fin</label>
+          <input id="fechaFin" type="date" required />
+          <button class="btn" type="submit">Reservar</button>
+          <button type="button" id="cancelReserve" class="btn ghost">Cancelar</button>
+        </form>
+        <div id="reserveMsg" role="status"></div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/hotel.js"></script>
+</body>
+</html>
