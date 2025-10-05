@@ -23,7 +23,8 @@ app.use("/users", usuarios);
 app.use("/hotels", hoteles);
 app.use("/habitaciones", habitaciones);
 app.use("/reservas", reservas);
-app.use("/auth", auth);
+app.use("/api/auth", auth);
+app.use("/api/auth",require("./routes/auth"))
 // Rutas de prueba (temporal)
 app.get("/", (req, res) => {
   res.json({ mensaje: "🚀 API de Reservas de Hoteles funcionando!" });

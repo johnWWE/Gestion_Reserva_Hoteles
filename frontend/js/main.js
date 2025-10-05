@@ -3,20 +3,23 @@ import { getToken, clearToken } from "./api.js";
 
 const btnLogout = document.getElementById("btn-logout");
 const linkLogin = document.getElementById("link-login");
+const welcomeText = document.getElementById("welcome-text");
 
-function updateNav(){
+function updateNav() {
   const token = getToken();
-  if(token){
-    if(btnLogout) btnLogout.hidden = false;
-    if(linkLogin) linkLogin.hidden = true;
+  if (token) {
+    if (btnLogout) btnLogout.hidden = false;
+    if (linkLogin) linkLogin.hidden = true;
+    if (welcomeText) welcomeText.textContent = "👋 Bienvenido al sistema de reservas";
   } else {
-    if(btnLogout) btnLogout.hidden = true;
-    if(linkLogin) linkLogin.hidden = false;
+    if (btnLogout) btnLogout.hidden = true;
+    if (linkLogin) linkLogin.hidden = false;
+    if (welcomeText) welcomeText.textContent = "Por favor inicia sesión para continuar";
   }
 }
 
-if(btnLogout){
-  btnLogout.addEventListener("click", ()=> {
+if (btnLogout) {
+  btnLogout.addEventListener("click", () => {
     clearToken();
     updateNav();
     location.href = "index.html";
@@ -24,3 +27,4 @@ if(btnLogout){
 }
 
 updateNav();
+

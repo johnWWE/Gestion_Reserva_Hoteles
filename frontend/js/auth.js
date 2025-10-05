@@ -1,41 +1,54 @@
 // js/auth.js
-import { request, setToken } from "./api.js";
-import { showMessage } from "./utils.js";
+import { apiRequest,saveToken } from "./api.js";
 
-const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
-const messageEl = document.getElementById("message");
+const loginForm = document.getElementById("loginForm");
+const mensaje = document.getElementById("mensaje");
 
-if(loginForm){
-  loginForm.addEventListener("submit", async (e)=>{
+// ✅ REGISTRO
+if (registerForm) {
+  registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = loginForm.email.value.trim();
-    const password = loginForm.password.value.trim();
-    try{
-      const data = await request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
-      setToken(data.token);
-      showMessage(messageEl, "Login correcto, redirigiendo...", "success");
-      setTimeout(()=> location.href = "hotels.html", 800);
-    }catch(err){
-      showMessage(messageEl, err.message || "Error en login", "error");
-      console.error(err);
+    const formData = {
+      nombre: document.querySelector('input[name="nombre"]').value,
+      email: document.querySelector('input[name="email"]').value,
+      password: document.querySelector('input[name="password"]').value,
+    };
+
+    try {
+      const data = await apiRequest("/auth/register", "POST", formData);
+      mensaje.textContent = `✅ ${data.mensaje || "Usuario registrado correctamente"}`;
+    } catch (err) {
+      mensaje.textContent = `❌ Error: Intenta nuevamente`;
     }
   });
 }
 
-if(registerForm){
-  registerForm.addEventListener("submit", async (e)=>{
+// ✅ LOGIN
+if (loginForm) {
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const nombre = registerForm.nombre.value.trim();
-    const email = registerForm.email.value.trim();
-    const password = registerForm.password.value.trim();
-    try{
-      await request("/auth/register", { method: "POST", body: JSON.stringify({ nombre, email, password }) });
-      showMessage(messageEl, "Usuario creado. Puedes iniciar sesión.", "success");
-      setTimeout(()=> location.href = "login.html", 900);
-    }catch(err){
-      showMessage(messageEl, err.message || "Error en registro", "error");
-      console.error(err);
+    const formData = {
+      email: document.querySelector("#email").value,
+      password: document.querySelector("#password").value,
+    };
+
+    try {
+      const data = await apiRequest("/auth/login", "POST", formData);
+      console.log("Respuesta del backend:", data);
+
+      if (data.token) {
+        saveToken(data.token);
+        mensaje.textContent = "✅ Inicio de sesión exitoso";
+        setTimeout(() => (window.location.href = "index.html"), 1500);
+      } else {
+        mensaje.textContent = "❌ Credenciales incorrectas";
+      }
+    } catch (err) {
+      console.error("Error al iniciar sesión:", err);
+      mensaje.textContent = "❌ Error al iniciar sesión";
     }
   });
 }
+
+
