@@ -8,26 +8,21 @@
 </head>
 <body>
 
-    <h1>Sistema de Reservas de Hoteles</h1>
-  <p id="welcome-text"></p>
-
-  <nav>
-    <a id="link-login" href="login.html">Iniciar sesión</a>
-    <button id="btn-logout" hidden>Cerrar sesión</button>
-  </nav>
-
-  <script type="module" src="./js/main.js"></script>
   <header class="site-header">
     <div class="container header-grid">
       <div class="brand">
         <img src="assets/logo.png" alt="Logo ReservaHoteles" class="logo" />
         <h1>ReservaHoteles</h1>
       </div>
+
       <nav class="nav" aria-label="Navegación principal">
-        <a href="hotels.html">Hoteles</a>
+        <a href="hotels.html" id="nav-hotels">Hoteles</a>
         <a href="reservations.html" id="nav-reservations">Mis reservas</a>
         <a href="admin.html" id="nav-admin">Admin</a>
         <a href="login.html" id="nav-login">Login</a>
+        <a href="register.html" id="nav-register">Registro</a>
+        <button id="btn-logout" hidden>Cerrar sesión</button>
+        <span id="welcome-text" style="margin-left: 10px;"></span>
       </nav>
     </div>
   </header>
@@ -61,6 +56,8 @@
     </div>
   </footer>
 
-  <script type="module" src="js/main.js"></script>
+  <!-- JS de manejo de sesión -->
+  <script type="module" src="js/session.js"></script>
 </body>
 </html>
+
