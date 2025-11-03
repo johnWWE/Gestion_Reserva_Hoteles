@@ -6,30 +6,45 @@
   <title>Hotel · ReservaHoteles</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
-  <main class="container">
-    <a href="hotels.html" class="btn small">← Volver</a>
-    <section id="hotelDetail"></section>
-
-    <section id="roomsList" class="grid-cards"></section>
-
-    <div id="reserveModal" class="modal hidden" role="dialog" aria-modal="true">
-      <div class="modal-content">
-        <h3>Reservar habitación</h3>
-        <form id="reserveForm" class="form">
-          <input type="hidden" id="habitacionId" />
-          <label for="fechaInicio">Fecha inicio</label>
-          <input id="fechaInicio" type="date" required />
-          <label for="fechaFin">Fecha fin</label>
-          <input id="fechaFin" type="date" required />
-          <button class="btn" type="submit">Reservar</button>
-          <button type="button" id="cancelReserve" class="btn ghost">Cancelar</button>
-        </form>
-        <div id="reserveMsg" role="status"></div>
-      </div>
+<body class="container">
+  <header class="site-header">
+    <div class="header-grid">
+      <div class="brand"><strong>ReservaHoteles</strong></div>
+      <nav class="nav">
+        <a href="index.html">Inicio</a>
+        <a href="hotels.html">Hoteles</a>
+        <a href="reservations.html" data-show-when="logged">Mis reservas</a>
+        <a href="admin.html" data-show-when="admin">Admin</a>
+        <a href="#" data-show-when="logged" data-action="logout">Salir</a>
+        <a href="login.html" data-hide-when="logged">Login</a>
+        <a href="register.html" data-hide-when="logged">Registro</a>
+        <span data-show-when="logged" data-username style="margin-left:10px;font-weight:500;"></span>
+      </nav>
     </div>
+  </header>
+
+  <main style="margin:1.5rem 0;">
+    <a class="btn" href="hotels.html">← Volver</a>
+    <h1 id="hotelName" style="margin-top:1rem;">Hotel</h1>
+    <p id="hotelInfo" class="muted"></p>
+
+    <section class="card" style="padding:1rem;margin:.75rem 0;">
+      <h3>Elegir fechas</h3>
+      <div class="row" style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+        <label>Inicio <input type="date" id="fechaInicio"></label>
+        <label>Fin <input type="date" id="fechaFin"></label>
+        <small class="muted">Selecciona las fechas antes de reservar.</small>
+      </div>
+      <p id="dateMsg" class="muted" style="margin-top:.5rem;"></p>
+    </section>
+
+    <h2 style="margin-top:1rem;">Habitaciones</h2>
+    <div id="rooms" class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;"></div>
+    <p id="msg" class="muted"></p>
   </main>
 
+  <script type="module" src="js/config.js"></script>
+  <script type="module" src="js/session.js"></script>
   <script type="module" src="js/hotel.js"></script>
 </body>
 </html>

@@ -1,0 +1,60 @@
+<!--frontend/admin.html-->
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel admin · ReservaHoteles</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="container">
+  <header class="site-header">
+    <div class="header-grid">
+      <div class="brand"><strong>ReservaHoteles</strong></div>
+      <nav class="nav">
+        <span data-show-when="logged" data-username style="margin-left:10px;font-weight:500;"></span>
+
+        <a href="index.html">Inicio</a>
+        <a href="hotels.html">Hoteles</a>
+        <a href="reservations.html">Reservas</a>
+        <a href="#" data-action="logout" data-show-when="logged">Salir</a>
+      </nav>
+    </div>
+  </header>
+
+  <main style="margin:1.5rem 0;">
+    <h1>Panel de administración</h1>
+    <p class="muted">Selecciona una acción rápida.</p>
+
+    <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:1rem;">
+      <a class="card" href="admin-hotels.html" style="padding:1rem;text-decoration:none;">
+        <h3>Gestionar hoteles</h3>
+        <p class="muted">Crear, editar y eliminar hoteles.</p>
+      </a>
+
+      <a class="card" href="rooms.html" style="padding:1rem;text-decoration:none;">
+        <h3>Gestionar habitaciones</h3>
+        <p class="muted">Crear y editar habitaciones.</p>
+      </a>
+
+      <a class="card" href="reservations.html" style="padding:1rem;text-decoration:none;">
+        <h3>Revisar reservas</h3>
+        <p class="muted">Ver y administrar reservas.</p>
+      </a>
+
+      <a class="card" href="users.html" style="padding:1rem;text-decoration:none;">
+        <h3>Usuarios</h3>
+        <p class="muted">Listado básico de usuarios.</p>
+      </a>
+    </div>
+  </main>
+
+  <script type="module" src="js/config.js"></script>
+  <script type="module" src="js/session.js"></script>
+  <script type="module">
+    import { showToast } from "./js/utils.js";
+    const name = sessionStorage.getItem("welcomeName");
+    if (name) { showToast(`Bienvenido, ${name} 👋`, 1800); sessionStorage.removeItem("welcomeName"); }
+  </script>
+</body>
+</html>

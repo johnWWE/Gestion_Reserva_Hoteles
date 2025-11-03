@@ -1,0 +1,47 @@
+<!--frontend/users.html-->
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Usuarios · Admin · ReservaHoteles</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="container">
+  <header class="site-header">
+    <div class="header-grid">
+      <div class="brand"><strong>ReservaHoteles</strong></div>
+      <nav class="nav">
+        <a href="admin.html">← Volver al panel</a>
+        <a href="index.html">Inicio</a>
+        <a href="hotels.html">Hoteles</a>
+        <a href="#" data-action="logout" data-show-when="logged">Salir</a>
+        <span data-show-when="logged" data-username style="margin-left:10px;font-weight:500;"></span>
+      </nav>
+    </div>
+  </header>
+
+  <main style="margin:1.5rem 0;">
+    <h1>Usuarios</h1>
+    <p id="msg" class="muted" style="margin:.5rem 0;"></p>
+
+    <div id="tableWrap" class="card" style="padding:1rem;overflow:auto;">
+      <table class="table" style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left;">ID</th>
+            <th style="text-align:left;">Nombre</th>
+            <th style="text-align:left;">Email</th>
+            <th style="text-align:left;">Rol</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script type="module" src="js/config.js"></script>
+  <script type="module" src="js/session.js"></script>
+  <script type="module" src="js/users.js"></script>
+</body>
+</html>

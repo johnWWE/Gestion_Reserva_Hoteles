@@ -1,9 +1,7 @@
-// src/app.js (Esquema básico)
-
+// backend/src/app.js
 const express = require("express");
 const app = express();
 
-// Ruta principal
 app.get("/", (req, res) => {
   res.send("Servidor funcionando 🚀");
 });

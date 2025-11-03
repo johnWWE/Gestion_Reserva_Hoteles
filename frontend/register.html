@@ -6,18 +6,41 @@
   <title>Registro · ReservaHoteles</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
-  <h2>Registro</h2>
-  <form id="registerForm">
-    <input type="text" id="nombre" name="nombre" placeholder="Nombre " required><br>
-    <input type="email" id="email" name="email" placeholder="Correo" required><br>
-    <input type="password" id="password" name="password" placeholder="Contraseña" required><br>
-    <button type="submit">Registrar</button>
-  </form>
+<body class="container">
+  <header class="site-header">
+    <div class="header-grid">
+      <div class="brand">
+        <img src="img/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+        <strong>ReservaHoteles</strong>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Inicio</a>
+        <a href="hotels.html">Hoteles</a>
+        <a href="reservations.html" data-show-when="logged">Mis reservas</a>
+        <a href="admin.html" data-show-when="admin">Admin</a>
+        <a href="login.html" data-hide-when="logged">Login</a>
+        <a href="register.html" data-hide-when="logged">Registro</a>
+        <a href="#" data-show-when="logged" data-action="logout">Salir</a>
+      </nav>
+    </div>
+  </header>
 
-  <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
-  <div id="mensaje"></div>
+  <main style="max-width:420px;margin:2rem auto;">
+    <h1>Registro</h1>
+    <form id="registerForm" class="card" style="padding:1rem;">
+      <input id="nombre" type="text" placeholder="Nombre" required />
+      <input id="email" type="email" placeholder="Correo" required />
+      <input id="password" type="password" placeholder="Contraseña" minlength="6" required />
+      <button class="btn" type="submit" style="margin-top:1rem;">Registrar</button>
+      <p id="regMsg" class="muted" style="margin-top:.5rem;"></p>
+    </form>
 
-  <script type="module" src="./js/auth.js"></script>
+    <p style="margin-top:1rem;">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+  </main>
+
+  <!-- IMPORTANTE: módulos -->
+  <script type="module" src="js/config.js"></script>
+  <script type="module" src="js/session.js"></script>
+  <script type="module" src="js/register.js"></script>
 </body>
 </html>

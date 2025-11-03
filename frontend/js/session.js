@@ -1,43 +1,49 @@
-// js/session.js
+// frontend/js/session.js
+// =========================================================
+// Control de sesión, visibilidad dinámica y “Bienvenido, {nombre}”
+// =========================================================
 
-const token = localStorage.getItem("token");
-const userName = localStorage.getItem("userName");
-const userRole = localStorage.getItem("userRole"); // opcional para el admin
-
-// Elementos del DOM
-const navLogin = document.getElementById("nav-login");
-const navRegister = document.getElementById("nav-register");
-const navAdmin = document.getElementById("nav-admin");
-const welcomeText = document.getElementById("welcome-text");
-const btnLogout = document.getElementById("btn-logout");
-
-// Si hay sesión activa
-if (token && userName) {
-  navLogin.style.display = "none";
-  navRegister.style.display = "none";
-  btnLogout.hidden = false;
-  welcomeText.textContent = `Bienvenido, ${userName} 👋`;
-
-  // Mostrar el panel admin solo si el rol es admin
-  if (userRole === "admin") {
-    navAdmin.style.display = "inline";
-  } else {
-    navAdmin.style.display = "none";
-  }
-
-} else {
-  // Sin sesión activa
-  navLogin.style.display = "inline";
-  navRegister.style.display = "inline";
-  btnLogout.hidden = true;
-  welcomeText.textContent = "";
-  navAdmin.style.display = "none";
+export function isLoggedIn() {
+  return Boolean(localStorage.getItem("token"));
 }
 
-// Evento cerrar sesión
-btnLogout.addEventListener("click", () => {
+export function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("userName");
   localStorage.removeItem("userRole");
   window.location.href = "index.html";
-});
+}
+
+export function applySessionUI() {
+  const logged = isLoggedIn();
+  const role = localStorage.getItem("userRole");
+  const userName = localStorage.getItem("userName") || "";
+
+  // Oculta/mostrar por estado de sesión
+  document.querySelectorAll("[data-hide-when='logged']").forEach(el => {
+    el.style.display = logged ? "none" : "";
+  });
+  document.querySelectorAll("[data-show-when='logged']").forEach(el => {
+    el.style.display = logged ? "" : "none";
+  });
+  document.querySelectorAll("[data-show-when='admin']").forEach(el => {
+    el.style.display = (logged && role === "admin") ? "" : "none";
+  });
+
+  // Botón de logout
+  const logoutBtn = document.querySelector("[data-action='logout']");
+  if (logoutBtn) logoutBtn.onclick = logout;
+
+  // “Bienvenido, {nombre}” en header
+  document.querySelectorAll("[data-username]").forEach(el => {
+    el.textContent = userName ? `Bienvenido, ${userName}` : "";
+  });
+
+  // Compatibilidad con viejo #welcome-text si existe
+  const legacyWelcome = document.getElementById("welcome-text");
+  if (legacyWelcome) {
+    legacyWelcome.textContent = logged && userName ? `Bienvenido, ${userName}` : "";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", applySessionUI);

@@ -1,3 +1,4 @@
+// backend/src/models/Hotel.js
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
@@ -10,7 +11,7 @@ module.exports = (sequelize) => {
       estrellas: { type: DataTypes.INTEGER, allowNull: false },
     },
     {
-      tableName: "hotels", // 👈 nombre fijo en minúscula
+      tableName: "hotels",
       timestamps: true,
     }
   );

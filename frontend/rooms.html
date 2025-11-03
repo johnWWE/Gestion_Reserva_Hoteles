@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gestionar habitaciones · Admin · ReservaHoteles</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="container">
+  <header class="site-header">
+    <div class="header-grid">
+      <div class="brand"><strong>ReservaHoteles</strong></div>
+      <nav class="nav">
+        <a href="admin.html">← Panel</a>
+        <a href="index.html">Inicio</a>
+        <a href="hotels.html">Hoteles</a>
+        <a href="#" data-action="logout" data-show-when="logged">Salir</a>
+        <span data-show-when="logged" data-username style="margin-left:10px;font-weight:500;"></span>
+      </nav>
+    </div>
+  </header>
+
+  <main style="margin:1.5rem 0;">
+    <h1>Gestionar habitaciones</h1>
+    <p class="muted">Crear y editar habitaciones (solo admin).</p>
+
+    <!-- Filtro por hotel -->
+    <section class="card" style="padding:1rem;margin:.75rem 0;">
+      <div class="row" style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center">
+        <label>Hotel
+          <select id="filterHotel" style="min-width:240px"></select>
+        </label>
+        <button class="btn small" id="btnReload">Recargar</button>
+      </div>
+    </section>
+
+    <!-- Crear -->
+    <section class="card" style="padding:1rem;margin:.75rem 0;">
+      <h3>Nueva habitación</h3>
+      <form id="formCreate" class="row" style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <label>Hotel
+          <select id="c_hotel" required style="min-width:240px"></select>
+        </label>
+        <label>Número
+          <input id="c_numero" type="text" required placeholder="103" />
+        </label>
+        <label>Tipo
+          <input id="c_tipo" type="text" required placeholder="Doble / Suite" />
+        </label>
+        <label>Capacidad
+          <input id="c_capacidad" type="number" min="1" step="1" required placeholder="2" />
+        </label>
+        <label>Precio
+          <input id="c_precio" type="number" min="0" step="0.01" required placeholder="250.00" />
+        </label>
+        <button class="btn" type="submit">Crear</button>
+        <span id="createMsg" class="muted"></span>
+      </form>
+    </section>
+
+    <!-- Listado -->
+    <section class="card" style="padding:1rem;overflow:auto;">
+      <table class="table" style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left;">ID</th>
+            <th style="text-align:left;">Hotel</th>
+            <th style="text-align:left;">Número</th>
+            <th style="text-align:left;">Tipo</th>
+            <th style="text-align:left;">Capacidad</th>
+            <th style="text-align:left;">Precio</th>
+            <th style="text-align:left;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <p id="listMsg" class="muted" style="margin-top:.5rem;"></p>
+    </section>
+  </main>
+
+  <script type="module" src="js/config.js"></script>
+  <script type="module" src="js/session.js"></script>
+  <script type="module" src="js/rooms.js"></script>
+</body>
+</html>
+

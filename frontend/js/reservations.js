@@ -1,39 +1,61 @@
-// js/reservations.js
+// frontend/js/reservations.js
 import { request } from "./api.js";
-import { formatDate } from "./utils.js";
 
-const listEl = document.getElementById("myReservations");
+const listEl = document.getElementById("list");
+const msgEl = document.getElementById("msg");
+const titleEl = document.getElementById("title");
 
-async function loadReservations(){
-  try{
-    const reservas = await request("/reservas");
-    if(!reservas.length) { listEl.innerHTML = "<p>No tienes reservas.</p>"; return; }
-    listEl.innerHTML = reservas.map(r => `
-      <article class="card">
-        <h4>Reserva #${r.id} — ${r.estado}</h4>
-        <p>Habitación: ${r.habitacionId}</p>
-        <p>Desde: ${formatDate(r.fechaInicio)} - Hasta: ${formatDate(r.fechaFin)}</p>
-        <div class="meta">
-          <button class="btn small cancelBtn" data-id="${r.id}">Cancelar</button>
-        </div>
-      </article>
-    `).join("");
+async function load() {
+  const role = localStorage.getItem("userRole") || "cliente";
 
-    document.querySelectorAll(".cancelBtn").forEach(b=>{
-      b.addEventListener("click", async (e)=>{
-        const id = e.currentTarget.dataset.id;
-        try{
-          await request(`/reservas/${id}`, { method: "DELETE" });
-          loadReservations();
-        }catch(err){
-          alert("Error cancelando: " + (err.message || ""));
-        }
-      });
-    });
+  // Endpoint correcto según rol:
+  // - admin: GET /api/reservas
+  // - cliente: GET /api/reservas/mias
+  const path = role === "admin" ? "/api/reservas" : "/api/reservas/mias";
+  if (role === "admin") titleEl.textContent = "Reservas (admin)";
 
-  }catch(err){
-    listEl.innerHTML = `<p>Error: ${err.message}</p>`;
+  try {
+    const data = await request(path);
+    renderList(data || []);
+  } catch (err) {
+    // Si no hay sesión, manda a login
+    if (/401|Acceso denegado|Token/.test(err.message)) {
+      window.location.href = "login.html";
+      return;
+    }
+    msgEl.textContent = `Error: ${err.message || "No se pudo cargar"}`;
   }
 }
 
-document.addEventListener("DOMContentLoaded", loadReservations);
+function renderList(items) {
+  if (!items.length) {
+    msgEl.textContent = "No hay reservas aún.";
+    listEl.innerHTML = "";
+    return;
+  }
+  msgEl.textContent = "";
+  listEl.innerHTML = items.map(cardHTML).join("");
+}
+
+function fmtDate(d) {
+  try {
+    return new Date(d).toLocaleDateString();
+  } catch {
+    return d;
+  }
+}
+
+function cardHTML(r) {
+  return `
+    <article class="card" style="padding:1rem">
+      <h3 style="margin:0 0 .25rem 0;">Reserva #${r.id}</h3>
+      <p class="muted" style="margin:.25rem 0;">Estado: <strong>${r.estado || "pendiente"}</strong></p>
+      <p style="margin:.25rem 0;">Del <strong>${fmtDate(r.fechaInicio)}</strong> al <strong>${fmtDate(r.fechaFin)}</strong></p>
+      <p style="margin:.25rem 0;">Habitación ID: ${r.habitacionId}</p>
+      ${r.userId ? `<p style="margin:.25rem 0;">Usuario ID: ${r.userId}</p>` : ""}
+    </article>
+  `;
+}
+
+load();
+

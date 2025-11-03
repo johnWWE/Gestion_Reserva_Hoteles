@@ -1,3 +1,4 @@
+<!--frontend/index.html-->
 <!doctype html>
 <html lang="es">
 <head>
@@ -5,24 +6,26 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ReservaHoteles · Inicio</title>
   <link rel="stylesheet" href="css/style.css" />
+  <!-- Leaflet (mapa) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
 
   <header class="site-header">
     <div class="container header-grid">
       <div class="brand">
-        <img src="assets/logo.png" alt="Logo ReservaHoteles" class="logo" />
+        <img src="assets/logo.png" alt="Logo ReservaHoteles" class="logo" onerror="this.style.display='none'"/>
         <h1>ReservaHoteles</h1>
       </div>
-
       <nav class="nav" aria-label="Navegación principal">
-        <a href="hotels.html" id="nav-hotels">Hoteles</a>
-        <a href="reservations.html" id="nav-reservations">Mis reservas</a>
-        <a href="admin.html" id="nav-admin">Admin</a>
-        <a href="login.html" id="nav-login">Login</a>
-        <a href="register.html" id="nav-register">Registro</a>
-        <button id="btn-logout" hidden>Cerrar sesión</button>
-        <span id="welcome-text" style="margin-left: 10px;"></span>
+        <a href="index.html">Inicio</a>
+        <a href="hotels.html">Hoteles</a>
+        <a href="reservations.html" data-show-when="logged">Mis reservas</a>
+        <a href="admin.html" data-show-when="admin">Admin</a>
+        <a href="login.html" data-hide-when="logged">Login</a>
+        <a href="register.html" data-hide-when="logged">Registro</a>
+        <a href="#" data-show-when="logged" data-action="logout">Salir</a>
+        <span data-show-when="logged" data-username style="margin-left:10px;font-weight:500;"></span>
       </nav>
     </div>
   </header>
@@ -32,6 +35,16 @@
       <h2>Reserva la habitación perfecta</h2>
       <p>Busca hoteles, revisa disponibilidad y reserva en segundos.</p>
       <a class="btn" href="hotels.html">Explorar hoteles</a>
+    </section>
+
+    <section class="card" style="margin:1rem 0;">
+      <h2>Mapa de Hoteles</h2>
+      <form id="geosearch" class="row" style="gap:.5rem;margin:.5rem 0;">
+        <input id="q" type="text" placeholder="Busca una dirección u hotel (ej: Hotel Miraflores Lima)" style="flex:1;padding:.5rem;">
+        <button type="submit" class="btn">Buscar</button>
+      </form>
+      <div id="map" style="height:420px;border-radius:12px;"></div>
+      <small style="display:block;margin-top:.5rem;color:#666">Mapa por OpenStreetMap • Geocodificación por Nominatim</small>
     </section>
 
     <section class="features grid-3">
@@ -56,8 +69,17 @@
     </div>
   </footer>
 
-  <!-- JS de manejo de sesión -->
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script type="module" src="js/config.js"></script>
   <script type="module" src="js/session.js"></script>
+  <script type="module" src="js/map.js"></script>
+  <script type="module">
+    import { showToast } from "./js/utils.js";
+    const name = sessionStorage.getItem("welcomeName");
+    if (name) { showToast(`Bienvenido, ${name} 👋`, 1800); sessionStorage.removeItem("welcomeName"); }
+  </script>
 </body>
 </html>
+
 

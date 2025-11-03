@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gestionar hoteles · Admin · ReservaHoteles</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="container">
+  <header class="site-header">
+    <div class="header-grid">
+      <div class="brand"><strong>ReservaHoteles</strong></div>
+      <nav class="nav">
+        <a href="admin.html">← Panel</a>
+        <a href="index.html">Inicio</a>
+        <a href="hotels.html">Hoteles (vista pública)</a>
+        <a href="#" data-action="logout" data-show-when="logged">Salir</a>
+        <span data-show-when="logged" data-username style="margin-left:10px;font-weight:500;"></span>
+      </nav>
+    </div>
+  </header>
+
+  <main style="margin:1.5rem 0;">
+    <h1>Gestionar hoteles</h1>
+    <p class="muted">Crear, editar y eliminar hoteles (solo admin).</p>
+
+    <!-- Crear -->
+    <section class="card" style="padding:1rem;margin:.75rem 0;">
+      <h3>Nuevo hotel</h3>
+      <form id="formCreate" class="row" style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <label>Nombre
+          <input id="c_nombre" type="text" required placeholder="Hotel Miraflores" />
+        </label>
+        <label>Dirección
+          <input id="c_direccion" type="text" required placeholder="Av. Larco 123, Lima" />
+        </label>
+        <label>Estrellas
+          <input id="c_estrellas" type="number" min="1" max="5" required placeholder="4" />
+        </label>
+        <button class="btn" type="submit">Crear</button>
+        <span id="createMsg" class="muted"></span>
+      </form>
+    </section>
+
+    <!-- Listado -->
+    <section class="card" style="padding:1rem;overflow:auto;">
+      <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.5rem;">
+        <button class="btn small" id="btnReload">Recargar</button>
+        <span id="listMsg" class="muted"></span>
+      </div>
+      <table class="table" style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr>
+            <th style="text-align:left;">ID</th>
+            <th style="text-align:left;">Nombre</th>
+            <th style="text-align:left;">Dirección</th>
+            <th style="text-align:left;">⭐</th>
+            <th style="text-align:left;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script type="module" src="js/config.js"></script>
+  <script type="module" src="js/session.js"></script>
+  <script type="module" src="js/admin-hotels.js"></script>
+</body>
+</html>

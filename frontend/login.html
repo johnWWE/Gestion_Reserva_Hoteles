@@ -1,21 +1,45 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iniciar Sesión</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Iniciar sesión · ReservaHoteles</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
-  <h2>Iniciar Sesión</h2>
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Correo" required><br>
-    <input type="password" id="password" placeholder="Contraseña" required><br>
-    <button type="submit">Ingresar</button>
-  </form>
-  <p>¿No tienes cuenta? <a href="register.html">Regístrate aquí</a></p>
-  <div id="mensaje"></div>
+<body class="container">
+  <header class="site-header">
+    <div class="header-grid">
+      <div class="brand">
+        <img src="img/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+        <strong>ReservaHoteles</strong>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Inicio</a>
+        <a href="hotels.html">Hoteles</a>
+        <a href="reservations.html" data-show-when="logged">Mis reservas</a>
+        <a href="admin.html" data-show-when="admin">Admin</a>
+        <a href="login.html" data-hide-when="logged">Login</a>
+        <a href="register.html" data-hide-when="logged">Registro</a>
+        <a href="#" data-show-when="logged" data-action="logout">Salir</a>
+      </nav>
+    </div>
+  </header>
 
-  <script type="module" src="./js/auth.js"></script>
+  <main style="max-width:420px;margin:2rem auto;">
+    <h1>Iniciar sesión</h1>
+    <form id="loginForm" class="card" style="padding:1rem;">
+      <label for="email">Email</label>
+      <input id="email" type="email" required placeholder="tucorreo@dominio.com" />
+      <label for="password">Contraseña</label>
+      <input id="password" type="password" required placeholder="••••••••" />
+      <button class="btn" type="submit" style="margin-top:1rem;">Entrar</button>
+      <p id="loginMsg" class="muted" style="margin-top:.5rem;"></p>
+    </form>
+  </main>
+
+  <!-- IMPORTANTE: módulos -->
+  <script type="module" src="js/config.js"></script>
+  <script type="module" src="js/session.js"></script>
+  <script type="module" src="js/login.js"></script>
 </body>
 </html>
-

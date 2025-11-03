@@ -1,15 +1,15 @@
+// backend/src/config/database.js
 const { Sequelize } = require("sequelize");
-require("dotenv").config(); // Para leer variables de entorno desde .env
+require("dotenv").config();
 
-// Creamos la conexión a PostgreSQL
 const sequelize = new Sequelize(
-  process.env.DB_NAME,     // Nombre de la BD
-  process.env.DB_USER,     // Usuario
-  process.env.DB_PASSWORD, // Contraseña
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
   {
-    host: process.env.DB_HOST, // Host (localhost normalmente)
+    host: process.env.DB_HOST,
     dialect: "postgres",
-    logging: false, // Para que no muestre logs enormes en consola
+    logging: false,
   }
 );
 

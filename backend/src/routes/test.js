@@ -1,3 +1,4 @@
+/*
 const express = require("express");
 const { User, Hotel, Habitacion, Reserva } = require("../models");
 
@@ -20,3 +21,4 @@ router.get("/users", async (req, res) => {
 });
 
 module.exports = router;
+*/
