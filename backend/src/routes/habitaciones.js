@@ -14,24 +14,47 @@ router.get("/", async (req, res) => {
   res.json(habitaciones);
 });
 
-// ====== Disponibilidad (público)  👈🏻 MOVER ANTES DE '/:id'
+
+// ====== Disponibilidad (público)
+// GET /api/habitaciones/disponibilidad?habitacionId=1&inicio=YYYY-MM-DD&fin=YYYY-MM-DD&debug=1
 router.get("/disponibilidad", async (req, res) => {
-  const { habitacionId, inicio, fin } = req.query;
+  const habitacionId = Number(req.query.habitacionId);
+  const inicio = String(req.query.inicio || "").trim();
+  const fin    = String(req.query.fin || "").trim();
+  const debug  = req.query.debug === "1";
+
   if (!habitacionId || !inicio || !fin) {
     return res.status(400).json({ error: "habitacionId, inicio y fin son requeridos" });
   }
-  const solapes = await Reserva.count({
-    where: {
-      habitacionId,
-      [Op.or]: [
-        { fechaInicio: { [Op.between]: [inicio, fin] } },
-        { fechaFin:   { [Op.between]: [inicio, fin] } },
-        { fechaInicio: { [Op.lte]: inicio }, fechaFin: { [Op.gte]: fin } },
-      ],
-    },
+  if (new Date(inicio) >= new Date(fin)) {
+    return res.status(400).json({ error: "La fecha fin debe ser posterior a la fecha inicio" });
+  }
+
+  // Regla semiabierta [inicio, fin):
+  // Solapa si:  existente.fechaInicio < fin  &&  inicio < existente.fechaFin
+  const whereSolape = {
+    habitacionId,
+    [Op.and]: [
+      { fechaInicio: { [Op.lt]: fin } },   // estrictamente menor
+      { fechaFin:   { [Op.gt]: inicio } }, // estrictamente mayor
+    ],
+  };
+
+  const solapes = await Reserva.count({ where: whereSolape });
+
+  if (!debug) return res.json({ disponible: solapes === 0 });
+
+  const bloqueadoras = await Reserva.findAll({
+    where: whereSolape,
+    attributes: ["id", "habitacionId", "fechaInicio", "fechaFin", "estado", "userId"],
+    order: [["id", "ASC"]],
+    limit: 10,
   });
-  res.json({ disponible: solapes === 0 });
+
+  return res.json({ disponible: solapes === 0, solapes, bloqueadoras });
 });
+
+
 
 // ====== Detalle (público)
 router.get("/:id", async (req, res) => {

@@ -10,25 +10,37 @@ const router = express.Router();
 function asISO(s) {
   if (!s) return null;
   const v = String(s).trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;      // YYYY-MM-DD
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) {            // dd/mm/yyyy
+
+  // 'YYYY-MM-DD' → OK
+  if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+
+  // 'YYYY-MM-DDTHH:mm:ss...' (ISO con hora) → recorta SIN convertir
+  if (/^\d{4}-\d{2}-\d{2}T/.test(v)) return v.slice(0, 10);
+
+  // 'dd/mm/yyyy' → normaliza
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) {
     const [d, m, y] = v.split("/");
     return `${y}-${m}-${d}`;
   }
-  const t = new Date(v);
-  if (isNaN(+t)) return null;
-  return t.toISOString().slice(0, 10);
+
+  // Cualquier otra cosa: intenta extraer YYYY-MM-DD al inicio
+  const m = v.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (m) return m[1];
+
+  // Evita new Date(v) para no “rodar” zonas horarias
+  return null;
 }
 
-/** Chequeo de solapamiento de reservas para una habitación */
+
+/** Chequeo de solapamiento de reservas para una habitación (rango semiabierto [inicio, fin)) */
 async function hayConflicto(habitacionId, inicio, fin) {
+  // Existe conflicto si: existente.fechaInicio < nuevo.fin  Y  nuevo.inicio < existente.fechaFin
   const count = await Reserva.count({
     where: {
       habitacionId,
-      [Op.or]: [
-        { fechaInicio: { [Op.between]: [inicio, fin] } },
-        { fechaFin:   { [Op.between]: [inicio, fin] } },
-        { fechaInicio: { [Op.lte]: inicio }, fechaFin: { [Op.gte]: fin } },
+      [Op.and]: [
+        { fechaInicio: { [Op.lt]: fin } },
+        { fechaFin:   { [Op.gt]: inicio } },
       ],
     },
   });

@@ -14,7 +14,7 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING(20),
         allowNull: false,
         defaultValue: "confirmada",
-        validate: { isIn: { args: [["pendiente","confirmada","cancelada"]], msg: "Estado inválido" } }
+        validate: { isIn: { args: [["pendiente","confirmada","cancelada","pagada"]], msg: "Estado inválido" } }
       },
     },
     { tableName: "reservas", timestamps: true }

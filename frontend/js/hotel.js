@@ -15,22 +15,25 @@ function getId() {
   return new URLSearchParams(location.search).get("id");
 }
 
+// Reemplaza toISOFromInput por esta versión
 function toISOFromInput(el) {
-  // fuerza YYYY-MM-DD aunque el navegador muestre dd/mm/yyyy
-  if (el.valueAsDate instanceof Date && !isNaN(+el.valueAsDate)) {
-    const d = el.valueAsDate;
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const da = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${da}`;
-  }
-  const v = (el.value || "").trim();
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) {
-    const [d, m, y] = v.split("/");
+  // 1) Si el input ya está en 'YYYY-MM-DD', úsalo tal cual (NO toques zonas horarias)
+  const raw = (el.value || "").trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+
+  // 2) Si viene 'dd/mm/yyyy', normaliza
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
+    const [d, m, y] = raw.split("/");
     return `${y}-${m}-${d}`;
   }
-  return v; // ya puede venir YYYY-MM-DD
+
+  // 3) Último recurso: si llega algo tipo ISO completo, recorta a YYYY-MM-DD
+  //    (no conviertas a Date para evitar corrimientos)
+  if (/^\d{4}-\d{2}-\d{2}T/.test(raw)) return raw.slice(0, 10);
+
+  return raw; // tal cual
 }
+
 
 function getDates() {
   const inicio = toISOFromInput(inicioEl);
@@ -50,11 +53,11 @@ async function load() {
   inicioEl.min = min; finEl.min = min;
 
   try {
-    const h = await request(`/api/hoteles/${id}`); // público
+    const h = await request(`/api/hoteles/${id}`);
     nameEl.textContent = h.nombre || `Hotel #${id}`;
     infoEl.textContent = `${h.direccion || ""} · ${h.estrellas ? "⭐".repeat(h.estrellas) : ""}`;
 
-    const rooms = await request(`/api/habitaciones?hotelId=${id}`); // público
+    const rooms = await request(`/api/habitaciones?hotelId=${id}`);
     renderRooms(rooms || []);
   } catch (err) {
     nameEl.textContent = "Error cargando hotel";
@@ -88,9 +91,24 @@ async function onReservar(habitacionId) {
   statusEl.textContent = "Comprobando disponibilidad...";
 
   try {
-    // 1) disponibilidad (público)
-    const disp = await request(`/api/habitaciones/disponibilidad?habitacionId=${habitacionId}&inicio=${d.inicio}&fin=${d.fin}`);
-    if (!disp?.disponible) { statusEl.textContent = "❌ No disponible en ese rango."; return; }
+    // 1) disponibilidad (con debug=1 para ver bloqueadoras si las hay)
+    const disp = await request(
+      `/api/habitaciones/disponibilidad?habitacionId=${habitacionId}&inicio=${d.inicio}&fin=${d.fin}&debug=1`
+    );
+
+    // logs de depuración
+    console.log("Disponibilidad ->", { habitacionId, ...d, respuesta: disp });
+
+    // Acepta boolean o string "true"
+    const esDisponible = disp?.disponible === true || disp?.disponible === "true";
+
+    if (!esDisponible) {
+      statusEl.textContent = "❌ No disponible en ese rango.";
+      if (disp && typeof disp === "object") {
+        console.warn("Bloqueadoras:", disp.bloqueadoras || disp.solapes);
+      }
+      return;
+    }
     statusEl.textContent = "✅ Disponible.";
 
     // 2) si no está logueado → login
@@ -112,7 +130,7 @@ async function onReservar(habitacionId) {
       `Reserva #${r.id} creada del ${d.inicio} al ${d.fin}`);
     location.href = "reservations.html";
   } catch (err) {
-    console.error(err);
+    console.error("Reservar error:", err);
     statusEl.textContent = `Error: ${err.message || "No se pudo reservar"}`;
   }
 }
@@ -132,4 +150,5 @@ async function onReservar(habitacionId) {
 
 [inicioEl, finEl].forEach(el => el?.addEventListener("input", () => { dateMsgEl.textContent = ""; }));
 load();
+
 

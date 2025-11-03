@@ -41,12 +41,12 @@ function renderList(items) {
   listEl.innerHTML = items.map(cardHTML).join("");
 }
 
-function fmtDate(d) {
-  try {
-    return new Date(d).toLocaleDateString();
-  } catch {
-    return d;
-  }
+function fmtDate(iso) {
+  // iso esperado: 'YYYY-MM-DD'
+  if (!iso || typeof iso !== "string") return "";
+  const [y, m, d] = iso.split("-");
+  if (!y || !m || !d) return iso; // si no es YYYY-MM-DD lo devolvemos tal cual
+  return `${d}/${m}/${y}`; // muestra DD/MM/YYYY sin tocar zona horaria
 }
 
 function cardHTML(r) {
