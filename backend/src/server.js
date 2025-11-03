@@ -45,6 +45,7 @@ tryMount("./routes/habitaciones", "/api/habitaciones");
 tryMount("./routes/reservas", "/api/reservas");
 tryMount("./routes/auth", "/api/auth");
 tryMount("./routes/pagos", "/api/pagos");
+tryMount("./routes/reportes", "/api/reportes");
 
 
 // ---- Utilitarias / demo

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reportes · ReservaHoteles</title>
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.3/dist/jspdf.plugin.autotable.min.js"></script>
+
+</head>
+<body class="container">
+  <header class="site-header">
+    <div class="header-grid">
+      <div class="brand"><strong>ReservaHoteles</strong></div>
+      <nav class="nav">
+        <a href="admin.html">Panel</a>
+        <a href="hotels.html">Hoteles</a>
+        <a href="reservations.html">Reservas</a>
+        <a href="#" data-action="logout">Salir</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="report-root" style="margin:1.5rem 0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;margin-bottom:.75rem;">
+      <h1 style="margin:0;">Reportes</h1>
+      <!-- ✅ Exporta un PDF “serio” (solo resultados) con encabezado -->
+      <button class="btn" id="btn-export-pdf">Descargar PDF</button>
+    </div>
+
+    <!-- ============================
+         INGRESOS POR MES
+    ============================ -->
+    <section class="card" style="padding:1rem;margin:.75rem 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;">
+        <h3 style="margin:0;">Ingresos por mes</h3>
+      </div>
+
+      <!-- Filtros (NO se exportan; solo sirven para consultar) -->
+      <form id="f-ingresos" class="row" style="gap:.5rem;align-items:center;margin-top:.5rem;">
+        <label>Desde <input type="date" id="ing-desde"></label>
+        <label>Hasta <input type="date" id="ing-hasta"></label>
+        <button class="btn small" type="submit">Consultar</button>
+      </form>
+
+      <!-- Resultados exportables -->
+      <div id="tbl-ingresos" style="margin-top:.5rem"></div>
+      <canvas id="chart-ingresos" height="120" style="margin-top:1rem;"></canvas>
+    </section>
+
+    <!-- ============================
+         RESERVAS POR HOTEL
+    ============================ -->
+    <section class="card" style="padding:1rem;margin:.75rem 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;">
+        <h3 style="margin:0;">Reservas por hotel</h3>
+        <button class="btn small" id="btn-rxh">Cargar</button>
+      </div>
+
+      <!-- Resultados exportables -->
+      <div id="tbl-rxh" style="margin-top:.5rem"></div>
+      <canvas id="chart-rxh" height="120" style="margin-top:1rem;"></canvas>
+    </section>
+
+    <!-- ============================
+         OCUPACIÓN POR RANGO
+    ============================ -->
+    <section class="card" style="padding:1rem;margin:.75rem 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;">
+        <h3 style="margin:0;">Ocupación por rango</h3>
+      </div>
+
+      <!-- Filtros (NO se exportan; solo sirven para consultar) -->
+      <form id="f-ocu" class="row" style="gap:.5rem;align-items:center;margin-top:.5rem;">
+        <label>Inicio <input type="date" id="ocu-inicio"></label>
+        <label>Fin <input type="date" id="ocu-fin"></label>
+        <button class="btn small" type="submit">Consultar</button>
+      </form>
+
+      <!-- Resultados exportables -->
+      <div id="tbl-ocu" style="margin-top:.5rem"></div>
+      <canvas id="chart-ocu" height="120" style="margin-top:1rem;"></canvas>
+    </section>
+  </main>
+
+  <script type="module" src="js/config.js"></script>
+  <script type="module" src="js/session.js"></script>
+  <script type="module" src="js/admin-reports.js"></script>
+</body>
+</html>
