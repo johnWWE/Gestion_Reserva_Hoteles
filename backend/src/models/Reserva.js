@@ -1,3 +1,4 @@
+// backend/src/models/Reserva.js
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
@@ -5,16 +6,19 @@ module.exports = (sequelize) => {
     "Reserva",
     {
       id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-      fechaInicio: { type: DataTypes.DATE, allowNull: false },
-      fechaFin: { type: DataTypes.DATE, allowNull: false },
-      estado: { type: DataTypes.STRING, defaultValue: "pendiente" },
-      userId: { type: DataTypes.INTEGER, allowNull: false },
+      userId: { type: DataTypes.INTEGER, allowNull: true }, // SET NULL en FK si borran usuario
       habitacionId: { type: DataTypes.INTEGER, allowNull: false },
+      fechaInicio: { type: DataTypes.DATEONLY, allowNull: false },
+      fechaFin: { type: DataTypes.DATEONLY, allowNull: false },
+      estado: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        defaultValue: "confirmada",
+        validate: { isIn: { args: [["pendiente","confirmada","cancelada"]], msg: "Estado inválido" } }
+      },
     },
-    {
-      tableName: "reservas", // 👈 nombre fijo en minúscula
-      timestamps: true,
-    }
+    { tableName: "reservas", timestamps: true }
   );
   return Reserva;
 };
+

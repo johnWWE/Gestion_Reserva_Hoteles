@@ -1,98 +1,99 @@
-// js/hotel.js
 // frontend/js/hotel.js
 import { request } from "./api.js";
 import { isLoggedIn } from "./session.js";
-import { showToast } from "./utils.js";
+
+const $ = (s) => document.querySelector(s);
+const nameEl   = $("#hotelName");
+const infoEl   = $("#hotelInfo");
+const roomsEl  = $("#rooms");
+const msgEl    = $("#msg");
+const dateMsgEl = $("#dateMsg");
+const inicioEl = $("#fechaInicio");
+const finEl    = $("#fechaFin");
 
 function getId() {
   return new URLSearchParams(location.search).get("id");
 }
 
-const nameEl = document.getElementById("hotelName");
-const infoEl = document.getElementById("hotelInfo");
-const roomsEl = document.getElementById("rooms");
-const msgEl = document.getElementById("msg");
-const dateMsgEl = document.getElementById("dateMsg");
-const inicioEl = document.getElementById("fechaInicio");
-const finEl = document.getElementById("fechaFin");
+function toISOFromInput(el) {
+  // fuerza YYYY-MM-DD aunque el navegador muestre dd/mm/yyyy
+  if (el.valueAsDate instanceof Date && !isNaN(+el.valueAsDate)) {
+    const d = el.valueAsDate;
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const da = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${da}`;
+  }
+  const v = (el.value || "").trim();
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) {
+    const [d, m, y] = v.split("/");
+    return `${y}-${m}-${d}`;
+  }
+  return v; // ya puede venir YYYY-MM-DD
+}
 
 function getDates() {
-  const inicio = inicioEl.value;
-  const fin = finEl.value;
-  if (!inicio || !fin) return { ok: false, error: "Selecciona fecha de inicio y fin." };
-  if (new Date(inicio) >= new Date(fin)) return { ok: false, error: "La fecha fin debe ser posterior a la fecha inicio." };
-  return { ok: true, inicio, fin };
+  const inicio = toISOFromInput(inicioEl);
+  const fin = toISOFromInput(finEl);
+  if (!inicio || !fin) return { ok:false, error:"Selecciona fecha de inicio y fin." };
+  if (new Date(inicio) >= new Date(fin)) return { ok:false, error:"La fecha fin debe ser posterior a la fecha inicio." };
+  return { ok:true, inicio, fin };
 }
 
 async function load() {
   const id = getId();
-  if (!id) {
-    nameEl.textContent = "Hotel no encontrado";
-    msgEl.textContent = "Falta el parámetro ?id=";
-    return;
-  }
+  if (!id) { nameEl.textContent = "Hotel no encontrado"; msgEl.textContent = "Falta ?id="; return; }
+
+  // fecha mínima = hoy
+  const d = new Date(); d.setHours(0,0,0,0);
+  const min = d.toISOString().slice(0,10);
+  inicioEl.min = min; finEl.min = min;
 
   try {
-    // Detalle del hotel (público)
-    const hotel = await request(`/api/hoteles/${id}`);
-    nameEl.textContent = hotel.nombre || `Hotel #${id}`;
-    infoEl.textContent = `${hotel.direccion || ""} · ${hotel.estrellas ? "⭐".repeat(hotel.estrellas) : ""}`;
+    const h = await request(`/api/hoteles/${id}`); // público
+    nameEl.textContent = h.nombre || `Hotel #${id}`;
+    infoEl.textContent = `${h.direccion || ""} · ${h.estrellas ? "⭐".repeat(h.estrellas) : ""}`;
 
-    // Habitaciones del hotel (público)
-    const rooms = await request(`/api/habitaciones?hotelId=${id}`);
+    const rooms = await request(`/api/habitaciones?hotelId=${id}`); // público
     renderRooms(rooms || []);
   } catch (err) {
     nameEl.textContent = "Error cargando hotel";
-    msgEl.textContent = `Error: ${err.message || "No Found"}`;
+    msgEl.textContent = `Error: ${err.message || "No encontrado"}`;
   }
 }
 
 function renderRooms(items) {
-  if (!items.length) {
-    msgEl.textContent = "No hay habitaciones para este hotel.";
-    roomsEl.innerHTML = "";
-    return;
-  }
+  if (!items.length) { roomsEl.innerHTML = ""; msgEl.textContent = "No hay habitaciones."; return; }
   msgEl.textContent = "";
-  roomsEl.innerHTML = items.map(r => roomCard(r)).join("");
+  roomsEl.innerHTML = items.map(r => `
+    <article class="card" style="padding:1rem">
+      <h3 style="margin:0 0 .25rem 0;">Hab. ${r.numero} ${r.tipo ? "· "+r.tipo : ""}</h3>
+      <p class="muted">Precio: <strong>${r.precio != null ? `S/ ${Number(r.precio).toFixed(2)}` : "—"}</strong></p>
+      <button class="btn small" data-room="${r.id}">Comprobar y reservar</button>
+      <p id="status-${r.id}" class="muted" style="margin-top:.25rem;"></p>
+    </article>
+  `).join("");
 
-  // wire buttons
-  items.forEach(r => {
-    const btn = document.getElementById(`btn-reservar-${r.id}`);
-    if (btn) btn.addEventListener("click", () => onReservar(r));
+  roomsEl.querySelectorAll("button[data-room]").forEach(btn => {
+    btn.addEventListener("click", () => onReservar(Number(btn.dataset.room)));
   });
 }
 
-function roomCard(r) {
-  const precio = r.precio != null ? `S/ ${Number(r.precio).toFixed(2)}` : "—";
-  return `
-    <article class="card" style="padding:1rem">
-      <h3 style="margin:0 0 .25rem 0;">Hab. ${r.numero} · ${r.tipo || ""}</h3>
-      <p class="muted" style="margin:.25rem 0;">Precio: <strong>${precio}</strong></p>
-      <button class="btn small" id="btn-reservar-${r.id}">Comprobar y reservar</button>
-      <p id="status-${r.id}" class="muted" style="margin-top:.25rem;"></p>
-    </article>
-  `;
-}
-
-async function onReservar(room) {
+async function onReservar(habitacionId) {
   const d = getDates();
   if (!d.ok) { dateMsgEl.textContent = d.error; return; }
   dateMsgEl.textContent = "";
 
-  const statusEl = document.getElementById(`status-${room.id}`);
+  const statusEl = document.getElementById(`status-${habitacionId}`);
   statusEl.textContent = "Comprobando disponibilidad...";
 
   try {
-    // 1) disponibilidad
-    const disp = await request(`/api/habitaciones/disponibilidad?habitacionId=${room.id}&inicio=${d.inicio}&fin=${d.fin}`);
-    if (!disp?.disponible) {
-      statusEl.textContent = "❌ No disponible en ese rango.";
-      return;
-    }
-    statusEl.textContent = "✅ Disponible. Reservando...";
+    // 1) disponibilidad (público)
+    const disp = await request(`/api/habitaciones/disponibilidad?habitacionId=${habitacionId}&inicio=${d.inicio}&fin=${d.fin}`);
+    if (!disp?.disponible) { statusEl.textContent = "❌ No disponible en ese rango."; return; }
+    statusEl.textContent = "✅ Disponible.";
 
-    // 2) si no estás logueado, te llevo a login y vuelves aquí
+    // 2) si no está logueado → login
     if (!isLoggedIn()) {
       sessionStorage.setItem("postLoginRedirect", location.href);
       sessionStorage.setItem("preselectedDates", JSON.stringify({ inicio: d.inicio, fin: d.fin }));
@@ -100,31 +101,35 @@ async function onReservar(room) {
       return;
     }
 
-    // 3) crear reserva
-    const reserva = await request(`/api/reservas`, {
+    // 3) crear reserva (privado)
+    statusEl.textContent = "Creando reserva...";
+    const r = await request(`/api/reservas`, {
       method: "POST",
-      body: { habitacionId: room.id, fechaInicio: d.inicio, fechaFin: d.fin }
+      body: { habitacionId, fechaInicio: d.inicio, fechaFin: d.fin }
     });
 
-    statusEl.textContent = "";
-    showToast(`Reserva creada #${reserva.id} 🎉`, 2000);
+    sessionStorage.setItem("reservationSuccess",
+      `Reserva #${r.id} creada del ${d.inicio} al ${d.fin}`);
+    location.href = "reservations.html";
   } catch (err) {
     console.error(err);
     statusEl.textContent = `Error: ${err.message || "No se pudo reservar"}`;
   }
 }
 
-// Si venimos de login, recuperar fechas preseleccionadas
+// restaurar fechas si venimos de login
 (function restoreDates() {
   try {
     const saved = sessionStorage.getItem("preselectedDates");
     if (saved) {
       const { inicio, fin } = JSON.parse(saved);
-      if (inicio && fin) { inicioEl.value = inicio; finEl.value = fin; }
+      if (inicio) inicioEl.value = inicio;
+      if (fin) finEl.value = fin;
       sessionStorage.removeItem("preselectedDates");
     }
   } catch {}
 })();
 
+[inicioEl, finEl].forEach(el => el?.addEventListener("input", () => { dateMsgEl.textContent = ""; }));
 load();
 

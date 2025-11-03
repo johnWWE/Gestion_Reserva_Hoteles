@@ -1,6 +1,10 @@
 // frontend/js/reservations.js
 import { request } from "./api.js";
-
+// Mostrar mensaje de éxito si venimos de reservar
+(function () {
+  const ok = sessionStorage.getItem("reservationSuccess");
+  if (ok) { alert(ok); sessionStorage.removeItem("reservationSuccess"); } // o usa tu toast
+})();
 const listEl = document.getElementById("list");
 const msgEl = document.getElementById("msg");
 const titleEl = document.getElementById("title");

@@ -14,14 +14,7 @@ router.get("/", async (req, res) => {
   res.json(habitaciones);
 });
 
-// ====== Detalle (público)
-router.get("/:id", async (req, res) => {
-  const habitacion = await Habitacion.findByPk(req.params.id);
-  habitacion ? res.json(habitacion) : res.status(404).json({ error: "Habitación no encontrada" });
-});
-
-// ====== Disponibilidad (público)
-// GET /api/habitaciones/disponibilidad?habitacionId=1&inicio=YYYY-MM-DD&fin=YYYY-MM-DD
+// ====== Disponibilidad (público)  👈🏻 MOVER ANTES DE '/:id'
 router.get("/disponibilidad", async (req, res) => {
   const { habitacionId, inicio, fin } = req.query;
   if (!habitacionId || !inicio || !fin) {
@@ -38,6 +31,12 @@ router.get("/disponibilidad", async (req, res) => {
     },
   });
   res.json({ disponible: solapes === 0 });
+});
+
+// ====== Detalle (público)
+router.get("/:id", async (req, res) => {
+  const habitacion = await Habitacion.findByPk(req.params.id);
+  habitacion ? res.json(habitacion) : res.status(404).json({ error: "Habitación no encontrada" });
 });
 
 // ====== Crear/editar/eliminar (solo admin)
@@ -84,3 +83,4 @@ router.delete("/:id", authenticateToken, authorizeRole(["admin"]), async (req, r
 });
 
 module.exports = router;
+
