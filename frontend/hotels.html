@@ -10,15 +10,17 @@
 <body>
 
   <header class="site-header">
+    <div id="results" class="hotel-list"></div>
+
     <div class="container header-grid">
       <div class="brand"><h1>Hoteles</h1></div>
       <nav class="nav">
-        <a href="index.html">Inicio</a>
-        <a href="reservations.html" data-show-when="logged">Mis reservas</a>
-        <a href="admin.html" data-show-when="admin">Admin</a>
-        <a href="#" data-show-when="logged" data-action="logout">Salir</a>
-        <a href="login.html" data-hide-when="logged">Login</a>
-        <a href="register.html" data-hide-when="logged">Registro</a>
+        <a class="chip"  href="index.html">Inicio</a>
+        <a class="chip" href="reservations.html" data-show-when="logged">Mis reservas</a>
+        <a class="chip" href="admin.html" data-show-when="admin">Admin</a>
+        <a class="chip" href="#" data-show-when="logged" data-action="logout">Salir</a>
+        <a class="chip" href="login.html" data-hide-when="logged">Login</a>
+        <a class="chip" href="register.html" data-hide-when="logged">Registro</a>
         <span data-show-when="logged" data-username style="margin-left:10px;font-weight:500;"></span>
       </nav>
     </div>
@@ -28,7 +30,44 @@
     <section>
       <input id="search" placeholder="Buscar por ciudad o nombre..." aria-label="Buscar hoteles"/>
     </section>
-    <section id="hotelsList" class="grid-cards" aria-live="polite"></section>
+    <!-- Filtros -->
+<section class="filters-wrap">
+  <div class="filters-row">
+    <!-- Ciudades -->
+    <div class="filter-block">
+      <div class="filter-label">Ciudad</div>
+      <div id="cityChips" class="chipset"></div>
+    </div>
+
+    <!-- Estrellas -->
+    <div class="filter-block">
+      <div class="filter-label">Estrellas</div>
+      <div id="starChips" class="chipset">
+        <!-- se rellenan dinámicamente -->
+      </div>
+    </div>
+
+    <!-- Precio -->
+    <div class="filter-block">
+      <div class="filter-label">Precio</div>
+      <div class="price-range">
+        <input id="priceMin" type="number" inputmode="decimal" placeholder="min" />
+        <span>—</span>
+        <input id="priceMax" type="number" inputmode="decimal" placeholder="max" />
+        <button id="btnPrice" class="chip chip-action">Aplicar</button>
+        <button id="btnClearPrice" class="chip chip-clear" title="Limpiar">✕</button>
+      </div>
+    </div>
+
+    <!-- Reset -->
+    <div class="filter-block">
+      <div class="filter-label">&nbsp;</div>
+      <button id="btnReset" class="chip chip-reset">Limpiar filtros</button>
+    </div>
+  </div>
+</section>
+
+    <section id="hotelsList" class="grid-lists" aria-live="polite"></section>
   </main>
 
   <script type="module" src="js/config.js"></script>
@@ -37,7 +76,7 @@
   <script type="module">
     import { showToast } from "./js/utils.js";
     const name = sessionStorage.getItem("welcomeName");
-    if (name) { showToast(`Bienvenido, ${name} 👋`, 1800); sessionStorage.removeItem("welcomeName"); }
+    if (name) { showToast(`Bienvenido, ${name} 👋`, 700); sessionStorage.removeItem("welcomeName"); }
   </script>
 </body>
 </html>

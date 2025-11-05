@@ -47,3 +47,13 @@ export function applySessionUI() {
 }
 
 document.addEventListener("DOMContentLoaded", applySessionUI);
+// Marca chip activo por pathname
+(function markActiveNav(){
+  const here = location.pathname.split("/").pop() || "index.html";
+  document.querySelectorAll(".nav .chip[href]").forEach(a=>{
+    const href = a.getAttribute("href");
+    if (!href) return;
+    const file = href.split("/").pop();
+    if (file === here) a.classList.add("is-active");
+  });
+})();
