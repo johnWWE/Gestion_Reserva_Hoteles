@@ -25,6 +25,42 @@ router.patch("/:id/cancelar", authenticateToken, asyncHandler(ctrl.cancelarReser
 
 // Eliminar (admin)
 router.delete("/:id", authenticateToken, authorizeRole(["admin"]), asyncHandler(ctrl.eliminarReserva));
+// Listar TODAS las reservas (solo admin)
+router.get("/", authenticateToken, authorizeRole(["admin"]), async (_req, res) => {
+  try {
+    const reservas = await Reserva.findAll({
+      order: [["id", "ASC"]],
+      include: [
+        {
+          model: Habitacion,
+          attributes: ["id", "numero", "hotelId"],
+          include: [
+            { model: Hotel, attributes: ["id", "nombre"] }
+          ],
+        },
+      ],
+    });
+
+    // (opcional) aplanar para front
+    const data = reservas.map(r => ({
+      id: r.id,
+      estado: r.estado,
+      fechaInicio: r.fechaInicio,
+      fechaFin: r.fechaFin,
+      habitacionId: r.habitacionId,
+      userId: r.userId,
+      habitacionNumero: r.Habitacion?.numero ?? null,
+      hotelId: r.Habitacion?.Hotel?.id ?? null,
+      hotelNombre: r.Habitacion?.Hotel?.nombre ?? null,
+    }));
+
+    return res.json(data);
+  } catch (error) {
+    console.error("GET /api/reservas ERROR:", error);
+    return res.status(500).json({ error: "No se pudieron obtener las reservas" });
+  }
+});
+
 
 module.exports = router;
 

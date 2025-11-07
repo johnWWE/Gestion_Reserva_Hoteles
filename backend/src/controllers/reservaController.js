@@ -1,5 +1,6 @@
+/*backend/src/controllers/reservaController.js*/
 const { Op } = require("sequelize");
-const { Reserva, Habitacion, Hotel } = require("../models");
+const { Reserva, Habitacion, Hotel, User} = require("../models");
 
 function asISO(s) {
   if (!s) return null;
@@ -63,13 +64,68 @@ async function crearReserva(req, res) {
 async function misReservas(req, res) {
   const userId = Number(req.user?.id);
   if (!userId) return res.status(401).json({ error: "Token inválido" });
-  const reservas = await Reserva.findAll({ where: { userId } });
-  res.json(reservas);
+
+  const reservas = await Reserva.findAll({
+    where: { userId },
+    order: [["id", "DESC"]],
+    include: [
+      {
+        model: Habitacion,
+        attributes: ["id", "numero", "hotelId"],
+        include: [{ model: Hotel, attributes: ["id", "nombre"] }],
+      },
+    ],
+    attributes: ["id", "estado", "fechaInicio", "fechaFin", "habitacionId", "userId"],
+  });
+
+  // Aplanamos para que el front pueda leer hotelNombre / habitacionNumero
+  const data = reservas.map(r => ({
+    id: r.id,
+    estado: r.estado,
+    fechaInicio: r.fechaInicio,
+    fechaFin: r.fechaFin,
+    habitacionId: r.habitacionId,
+    userId: r.userId,
+    habitacionNumero: r.Habitacion?.numero ?? null,
+    hotelId: r.Habitacion?.Hotel?.id ?? null,
+    hotelNombre: r.Habitacion?.Hotel?.nombre ?? null,
+  }));
+  res.json(data);
 }
 
 async function listarReservas(_req, res) {
-  const reservas = await Reserva.findAll();
-  res.json(reservas);
+  const reservas = await Reserva.findAll({
+    order: [["id", "DESC"]],
+    include: [
+      {
+        model: Habitacion,
+        attributes: ["id", "numero", "hotelId"],
+        include: [{ model: Hotel, attributes: ["id", "nombre"] }],
+      },
+      { model: User, attributes: ["id", "nombre", "email"] },
+    ],
+    attributes: ["id", "estado", "fechaInicio", "fechaFin", "habitacionId", "userId"],
+  });
+
+  // Aplanar para que el front lea hotelNombre / habitacionNumero igual que en “mías”
+  const data = reservas.map(r => ({
+    id: r.id,
+    estado: r.estado,
+    fechaInicio: r.fechaInicio,
+    fechaFin: r.fechaFin,
+    habitacionId: r.habitacionId,
+    userId: r.userId,
+
+    habitacionNumero: r.Habitacion?.numero ?? null,
+    hotelId: r.Habitacion?.Hotel?.id ?? null,
+    hotelNombre: r.Habitacion?.Hotel?.nombre ?? null,
+
+    // opcional: datos del usuario para admin
+    usuarioNombre: r.User?.nombre ?? null,
+    usuarioEmail: r.User?.email ?? null,
+  }));
+
+  res.json(data);
 }
 
 async function obtenerReserva(req, res) {
@@ -123,3 +179,4 @@ module.exports = {
   cancelarReserva,
   eliminarReserva,
 };
+

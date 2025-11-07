@@ -50,16 +50,19 @@ function fmtDate(iso) {
 }
 
 function cardHTML(r) {
+  const hotel = r.hotelNombre ? ` · <strong>${r.hotelNombre}</strong>` : "";
+  const hab = r.habitacionNumero ? ` (Hab. ${r.habitacionNumero})` : ` · Habitación ID: ${r.habitacionId}`;
+
   return `
-    <article class="card" style="padding:1rem">
-      <h3 style="margin:0 0 .25rem 0;">Reserva #${r.id}</h3>
-      <p class="muted" style="margin:.25rem 0;">Estado: <strong>${r.estado || "pendiente"}</strong></p>
+    <article class="card card--shadow" style="padding:1rem">
+      <h3 style="margin:0 0 .25rem 0;">Reserva #${r.id}${hotel}</h3>
+      <p class="muted" style="margin:.25rem 0;">Estado: <strong>${r.estado || "pendiente"}</strong>${hab}</p>
       <p style="margin:.25rem 0;">Del <strong>${fmtDate(r.fechaInicio)}</strong> al <strong>${fmtDate(r.fechaFin)}</strong></p>
-      <p style="margin:.25rem 0;">Habitación ID: ${r.habitacionId}</p>
-      ${r.userId ? `<p style="margin:.25rem 0;">Usuario ID: ${r.userId}</p>` : ""}
+      ${r.userId ? `<p class="muted" style="margin:.25rem 0;">Usuario ID: ${r.userId}</p>` : ""}
     </article>
   `;
 }
+
 
 load();
 
