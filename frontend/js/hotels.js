@@ -103,8 +103,12 @@ function renderRows(list) {
 
       <div class="hotel-cta">
         ${price}
+        <button class="hotel-btn secondary" data-loc="${h.direccion || ''} ${h.nombre}">
+          Ver ubicación
+        </button>
         <a class="hotel-btn" href="hotel.html?id=${h.id}">Ver disponibilidad</a>
       </div>
+
     </article>
   `;
 }).join("");
@@ -229,6 +233,52 @@ async function loadHotels() {
   applyFilter();
 }
 loadHotels();
+// ===============================
+// MAPA – Ver ubicación
+// ===============================
+// ===============================
+// VER UBICACIÓN – Redirigir a Google Maps
+// ===============================
+document.addEventListener("click", async (e) => {
+  if (!e.target.matches("[data-loc]")) return;
+
+  const query = e.target.dataset.loc.trim();
+  if (!query) {
+    alert("Dirección no disponible.");
+    return;
+  }
+
+  try {
+    // Buscar ubicación con la API del backend
+    const geo = await fetch(`${API_URL}/api/external/geocode?q=${encodeURIComponent(query)}`)
+      .then(r => r.json())
+      .catch(() => []);
+
+    if (geo.length > 0) {
+      // Caso 1: Ubicación exacta encontrada
+      const lat = parseFloat(geo[0].lat);
+      const lon = parseFloat(geo[0].lon);
+      const url = `https://www.google.com/maps?q=${lat},${lon}`;
+      window.open(url, "_blank");
+      return;
+    }
+
+    // Caso 2: No encontró dirección exacta → usar ciudad
+    const city = query.split(",").pop().trim();
+    if (city) {
+      const url = `https://www.google.com/maps?q=${encodeURIComponent(city)}`;
+      window.open(url, "_blank");
+      return;
+    }
+
+    // Caso 3: Nada disponible
+    alert("No se pudo obtener la ubicación.");
+  } catch (err) {
+    alert("Error al buscar ubicación.");
+  }
+});
+
+
 
 
 

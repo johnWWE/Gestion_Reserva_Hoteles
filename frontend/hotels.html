@@ -7,8 +7,21 @@
   <title>Hoteles · ReservaHoteles</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
+<!-- Modal de ubicación -->
+<div id="mapModal" class="modal hidden">
+  <div class="modal-content">
+    <span id="closeMap" class="modal-close">&times;</span>
+    <h3 id="mapTitle"></h3>
+    <div id="map" style="height: 300px; border-radius: 8px; margin-top:10px;"></div>
+  </div>
+</div>
 
+<!-- Leaflet CSS/JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+
+<body>
   <header class="site-header">
     <div id="results" class="hotel-list"></div>
 

@@ -592,5 +592,41 @@ h3{ font-size:18px; }
   .hotel-card__cta { align-items: start; }
 }
 
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  animation: fadeIn .25s ease-out;
+}
+
+.modal-close {
+  float: right;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.hotel-btn.secondary {
+  background: #fff;
+  border: 1px solid #007bff;
+  color: #007bff;
+}
+
 
 
