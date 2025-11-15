@@ -1,3 +1,5 @@
+
+/*backend/src/controllers/habitacionController.js*/
 const { Op } = require("sequelize");
 const { Habitacion, Reserva } = require("../models");
 

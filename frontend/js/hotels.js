@@ -1,4 +1,9 @@
+// frontend/js/hotels.js
 import { request } from "./api.js";
+import { API_URL } from "./config.js";
+
+// BASE del backend (sin tocar nada más)
+const BASE_URL = API_URL.replace(/\/$/, ""); // por si algún día pones una barra al final
 
 const listEl  = document.getElementById("hotelsList");
 const searchEl = document.getElementById("search");
@@ -15,8 +20,8 @@ const btnReset    = document.getElementById("btnReset");
 const state = {
   all: [],
   q: "",
-  cities: new Set(),   // seleccionadas
-  stars: new Set(),    // seleccionadas (número)
+  cities: new Set(),
+  stars: new Set(),
   priceMin: null,
   priceMax: null,
 };
@@ -25,14 +30,17 @@ function cityFromAddress(addr = "") {
   const parts = String(addr).split(",").map(s => s.trim()).filter(Boolean);
   return parts.length ? parts[parts.length - 1] : "";
 }
+
 function scoreFromStars(stars) {
   const s = Number(stars || 0);
   return Math.max(7.5, Math.min(10, 7.5 + s * 0.5)).toFixed(1);
 }
+
 function placeholderImg(hotel) {
   const city = cityFromAddress(hotel.direccion);
   return `https://source.unsplash.com/400x300/?hotel,${encodeURIComponent(city || hotel.nombre)}`;
 }
+
 async function minPriceForHotel(hotelId) {
   try {
     const rooms = await request(`/api/habitaciones?hotelId=${hotelId}`);
@@ -52,17 +60,35 @@ function renderRows(list) {
     listEl.innerHTML = `<p class="muted">No se encontraron hoteles.</p>`;
     return;
   }
+
   listEl.innerHTML = list.map(h => {
-    const img   = placeholderImg(h);
+    // 👇 armamos correctamente la URL de la imagen
+    let img;
+    if (h.fotoUrl) {
+      // aseguramos que tenga / al inicio
+      const path = h.fotoUrl.startsWith("/") ? h.fotoUrl : `/${h.fotoUrl}`;
+      img = `${BASE_URL}${path}`;
+    } else {
+      img = placeholderImg(h);
+    }
+
+    // DEBUG: esto te va a mostrar en la consola qué está llegando
+    console.log("Hotel:", h.nombre, "fotoUrl:", h.fotoUrl, "img src:", img);
+
     const score = scoreFromStars(h.estrellas);
     const city  = cityFromAddress(h.direccion);
     const price = (h._minPrice != null)
       ? `<div class="price">S/ ${Number(h._minPrice).toFixed(2)}<small>Precio desde</small></div>`
       : `<div class="price"><small>Sin precio</small></div>`;
+
     return `
       <article class="hotel-row">
-        <img class="hotel-thumb" src="${img}" alt="Foto de ${h.nombre}"
+        <img class="hotel-thumb"
+             src="${img}"
+             alt="Foto de ${h.nombre}"
+             style="width: 220px; height: 150px; object-fit: cover;"
              onerror="this.style.background='#eef1f6'; this.src='';">
+
         <div class="hotel-info">
           <h3>${h.nombre}<span class="badge-score">${score}</span></h3>
           <div class="hotel-meta">
@@ -70,6 +96,7 @@ function renderRows(list) {
             ${h.estrellas ? ` · ${"⭐".repeat(Number(h.estrellas))}` : ""}
           </div>
         </div>
+
         <div class="hotel-cta">
           ${price}
           <a class="hotel-btn" href="hotel.html?id=${h.id}">Ver disponibilidad</a>
@@ -97,7 +124,6 @@ function buildCityChips(all) {
 }
 
 function buildStarChips(all) {
-  // estrellas presentes
   const set = new Set(all.map(h => Number(h.estrellas || 0)).filter(Boolean));
   const stars = Array.from(set).sort((a,b)=>a-b);
   starChipsEl.innerHTML = stars.map(s =>
@@ -173,9 +199,7 @@ btnReset?.addEventListener("click", () => {
   state.priceMax = null;
   priceMinEl.value = "";
   priceMaxEl.value = "";
-  // quitar .active de chips
   document.querySelectorAll(".chip.active").forEach(el => el.classList.remove("active"));
-  // limpiar búsqueda
   if (searchEl) searchEl.value = "";
   state.q = "";
   applyFilter();
@@ -186,7 +210,8 @@ async function loadHotels() {
   listEl.innerHTML = `<p class="muted">Cargando hoteles…</p>`;
   const hotels = await request("/api/hoteles");
 
-  // precio mínimo
+  console.log("Hoteles desde API:", hotels); // 👈 para ver qué llega desde el backend
+
   const withPrices = await Promise.all(hotels.map(async h => {
     const { min } = await minPriceForHotel(h.id);
     return { ...h, _minPrice: min };
@@ -199,3 +224,6 @@ async function loadHotels() {
   applyFilter();
 }
 loadHotels();
+
+
+

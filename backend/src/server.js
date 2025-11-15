@@ -6,21 +6,29 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cors = require("cors");
 
+const path = require("path");
+
+
 const { sequelize } = require("./models"); // index.js de models
 const { authenticateToken, authorizeRole } = require("./middlewares/authMiddleware");
-
 const app = express();
-
 // ---- Middlewares base
-app.use(cors());            // en prod: configura origin
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 app.use(helmet());
 app.use(morgan("dev"));
+
+// Servir archivos estáticos de uploads
+app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
+// ---- Rutas API
+
 app.use("/api/usuarios", require("./routes/usuarios"));
 app.use("/api/habitaciones", require("./routes/habitaciones"));
 app.use("/api/hoteles", require("./routes/hoteles"));
-
-
 // ---- Cargador seguro de rutas (no romper si falta algún archivo)
 function tryMount(path, mountpoint) {
   try {

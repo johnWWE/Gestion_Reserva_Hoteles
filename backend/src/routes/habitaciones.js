@@ -1,3 +1,4 @@
+/*backend/src/routes/habitaciones.js*/
 const express = require("express");
 const { Op } = require("sequelize");
 const { Habitacion, Reserva } = require("../models");
@@ -93,5 +94,84 @@ router.get("/:id", async (req, res) => {
 
 // ====== CRUD admin (crear/editar/eliminar) ...
 // (lo que ya tenías)
+// Crear habitación
+router.post(
+  "/",
+  authenticateToken,
+  authorizeRole(["admin"]),
+  async (req, res) => {
+    try {
+      const { hotelId, numero, tipo, capacidad, precio } = req.body;
+
+      if (!hotelId || !numero || !tipo || capacidad == null) {
+        return res.status(400).json({
+          error: "hotelId, numero, tipo y capacidad son requeridos"
+        });
+      }
+
+      const hab = await Habitacion.create({
+        hotelId,
+        numero,
+        tipo,
+        capacidad: Number(capacidad),
+        precio: precio != null ? Number(precio) : null,
+      });
+
+      res.status(201).json(hab);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+// Editar habitación
+router.put(
+  "/:id",
+  authenticateToken,
+  authorizeRole(["admin"]),
+  async (req, res) => {
+    try {
+      const { numero, tipo, capacidad, precio } = req.body;
+
+      const [updated] = await Habitacion.update(
+        {
+          numero,
+          tipo,
+          capacidad: capacidad != null ? Number(capacidad) : undefined,
+          precio: precio != null ? Number(precio) : undefined,
+        },
+        { where: { id: req.params.id } }
+      );
+
+      updated
+        ? res.json({ message: "Habitación actualizada" })
+        : res.status(404).json({ error: "Habitación no encontrada" });
+
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+// Eliminar habitación
+router.delete(
+  "/:id",
+  authenticateToken,
+  authorizeRole(["admin"]),
+  async (req, res) => {
+    try {
+      const deleted = await Habitacion.destroy({
+        where: { id: req.params.id }
+      });
+
+      deleted
+        ? res.json({ message: "Habitación eliminada" })
+        : res.status(404).json({ error: "Habitación no encontrada" });
+
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
 
 module.exports = router;
