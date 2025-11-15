@@ -60,3 +60,22 @@ export async function loginUser(email, password) {
   localStorage.setItem("userRole", data.user?.rol || "cliente");
   return data;
 }
+export async function requestRaw(url, options = {}) {
+  const token = localStorage.getItem("token");
+
+  const headers = {};
+  if (token) headers["Authorization"] = "Bearer " + token;
+  // NOTA: aquí NO ponemos Content-Type, para permitir FormData
+
+  const res = await fetch(API_URL + url, {
+    ...options,
+    headers,
+  });
+
+  if (!res.ok) {
+    const msg = await res.text();
+    throw new Error(msg || "Error en requestRaw");
+  }
+
+  return res;
+}

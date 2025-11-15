@@ -1,83 +1,70 @@
 // backend/src/server.js
 require("dotenv").config();
 
+const path = require("path");
 const express = require("express");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const cors = require("cors");
 
-const path = require("path");
-
-
-const { sequelize } = require("./models"); // index.js de models
+const { sequelize } = require("./models");
 const { authenticateToken, authorizeRole } = require("./middlewares/authMiddleware");
+
 const app = express();
-// ---- Middlewares base
+
+// Middlewares base
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(express.json());
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        "default-src": ["*"],
+        "img-src": ["*", "data:", "blob:"],
+        "script-src": ["'self'", "*"],
+        "connect-src": ["*", "data:"],
+        "style-src": ["'self'", "'unsafe-inline'", "*"],
+      },
+    },
+  })
+);
 app.use(morgan("dev"));
 
-// Servir archivos estáticos de uploads
+// Habilitar CORS para archivos estáticos (IMÁGENES)
+app.use("/uploads", (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
+// Static images
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
-// ---- Rutas API
 
+// Rutas
+app.use("/api/auth", require("./routes/auth"));
 app.use("/api/usuarios", require("./routes/usuarios"));
-app.use("/api/habitaciones", require("./routes/habitaciones"));
 app.use("/api/hoteles", require("./routes/hoteles"));
-// ---- Cargador seguro de rutas (no romper si falta algún archivo)
-function tryMount(path, mountpoint) {
-  try {
-    const router = require(path);
-    app.use(mountpoint, router);
-    console.log(`✅ Ruta montada: ${mountpoint} -> ${path}`);
-  } catch (err) {
-    if (err.code === "MODULE_NOT_FOUND") {
-      console.warn(`⚠️  Ruta omitida: ${mountpoint} (no existe ${path})`);
-    } else {
-      console.error(`❌ Error cargando ${path}:`, err.message);
-    }
-  }
-}
+app.use("/api/habitaciones", require("./routes/habitaciones"));
+app.use("/api/reservas", require("./routes/reservas"));
+app.use("/api/pagos", require("./routes/pagos"));
+app.use("/api/reportes", require("./routes/reportes"));
+app.use("/api/external", require("./routes/external"));
 
-// ---- Montar rutas con prefijo /api
-tryMount("./routes/external", "/api/external");
-tryMount("./routes/test", "/api");                 // se omitirá si no existe
-tryMount("./routes/usuarios", "/api/usuarios");    // se omitirá si no existe
-tryMount("./routes/hoteles", "/api/hoteles");
-tryMount("./routes/habitaciones", "/api/habitaciones");
-tryMount("./routes/reservas", "/api/reservas");
-tryMount("./routes/auth", "/api/auth");
-tryMount("./routes/pagos", "/api/pagos");
-tryMount("./routes/reportes", "/api/reportes");
-
-
-// ---- Utilitarias / demo
+// Ruta base
 app.get("/", (req, res) => {
-  res.json({ mensaje: "🚀 API de Reservas de Hoteles funcionando!" });
+  res.json({ mensaje: "🚀 API funcionando correctamente" });
 });
 
+// Debug usuario
 app.get("/me", authenticateToken, (req, res) => {
   res.json({ userId: req.user.id, rol: req.user.rol });
 });
 
-app.delete("/usuarios/:id", authenticateToken, authorizeRole(["admin"]), (req, res) => {
-  res.json({ message: "Usuario eliminado (solo admin)" });
-});
-
-// ---- Mejor logging de errores no capturados
-process.on("unhandledRejection", (reason) => {
-  console.error("🔴 UnhandledRejection:", reason);
-});
-process.on("uncaughtException", (err) => {
-  console.error("🔴 UncaughtException:", err);
-});
-
-// ---- Arranque con sync
+// Arranque
 const PORT = process.env.PORT || 3000;
 
 (async () => {
@@ -85,16 +72,16 @@ const PORT = process.env.PORT || 3000;
     console.log("⏳ Conectando a DB…");
     await sequelize.authenticate();
     console.log("✅ Conexión a DB OK");
+
     await sequelize.sync({ alter: true });
-    console.log("✅ Tablas sincronizadas");
+    console.log("📦 Tablas sincronizadas");
 
     app.listen(PORT, () => {
       console.log(`🌍 Servidor corriendo en http://localhost:${PORT}`);
     });
   } catch (err) {
-    console.error("❌ Error iniciando el servidor:", err.message);
-    console.error("🧪 Revisa tus variables .env: DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, JWT_SECRET");
-    // No hacemos process.exit para que nodemon no quede en bucle ciego;
-    // pero sí dejamos el proceso vivo para ver logs.
+    console.error("❌ Error iniciando:", err.message);
   }
 })();
+
+

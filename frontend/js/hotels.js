@@ -5,6 +5,20 @@ import { API_URL } from "./config.js";
 // BASE del backend (sin tocar nada más)
 const BASE_URL = API_URL.replace(/\/$/, ""); // por si algún día pones una barra al final
 
+
+
+function getHotelImage(hotel) {
+  if (!hotel.fotoUrl) return placeholderImg(hotel);
+
+  // Asegurar que la URL empieza con "/"
+  const clean = hotel.fotoUrl.startsWith("/")
+    ? hotel.fotoUrl
+    : "/" + hotel.fotoUrl;
+
+  // URL final
+  return `${BASE_URL}${clean}`;
+}
+
 const listEl  = document.getElementById("hotelsList");
 const searchEl = document.getElementById("search");
 
@@ -62,48 +76,39 @@ function renderRows(list) {
   }
 
   listEl.innerHTML = list.map(h => {
-    // 👇 armamos correctamente la URL de la imagen
-    let img;
-    if (h.fotoUrl) {
-      // aseguramos que tenga / al inicio
-      const path = h.fotoUrl.startsWith("/") ? h.fotoUrl : `/${h.fotoUrl}`;
-      img = `${BASE_URL}${path}`;
-    } else {
-      img = placeholderImg(h);
-    }
+  const img = getHotelImage(h);
+  console.log("Hotel:", h.nombre, "URL imagen:", img);
 
-    // DEBUG: esto te va a mostrar en la consola qué está llegando
-    console.log("Hotel:", h.nombre, "fotoUrl:", h.fotoUrl, "img src:", img);
+  const score = scoreFromStars(h.estrellas);
+  const city  = cityFromAddress(h.direccion);
+  const price = (h._minPrice != null)
+    ? `<div class="price">S/ ${Number(h._minPrice).toFixed(2)}<small>Precio desde</small></div>`
+    : `<div class="price"><small>Sin precio</small></div>`;
 
-    const score = scoreFromStars(h.estrellas);
-    const city  = cityFromAddress(h.direccion);
-    const price = (h._minPrice != null)
-      ? `<div class="price">S/ ${Number(h._minPrice).toFixed(2)}<small>Precio desde</small></div>`
-      : `<div class="price"><small>Sin precio</small></div>`;
+  return `
+    <article class="hotel-row">
+      <img class="hotel-thumb"
+           src="${img}"
+           alt="Foto de ${h.nombre}"
+           style="width: 220px; height: 150px; object-fit: cover;"
+           onerror="this.src='https://source.unsplash.com/400x300/?hotel';">
 
-    return `
-      <article class="hotel-row">
-        <img class="hotel-thumb"
-             src="${img}"
-             alt="Foto de ${h.nombre}"
-             style="width: 220px; height: 150px; object-fit: cover;"
-             onerror="this.style.background='#eef1f6'; this.src='';">
-
-        <div class="hotel-info">
-          <h3>${h.nombre}<span class="badge-score">${score}</span></h3>
-          <div class="hotel-meta">
-            ${h.direccion || ""}${city ? ` · ${city}` : ""}
-            ${h.estrellas ? ` · ${"⭐".repeat(Number(h.estrellas))}` : ""}
-          </div>
+      <div class="hotel-info">
+        <h3>${h.nombre}<span class="badge-score">${score}</span></h3>
+        <div class="hotel-meta">
+          ${h.direccion || ""}${city ? ` · ${city}` : ""}
+          ${h.estrellas ? ` · ${"⭐".repeat(Number(h.estrellas))}` : ""}
         </div>
+      </div>
 
-        <div class="hotel-cta">
-          ${price}
-          <a class="hotel-btn" href="hotel.html?id=${h.id}">Ver disponibilidad</a>
-        </div>
-      </article>
-    `;
-  }).join("");
+      <div class="hotel-cta">
+        ${price}
+        <a class="hotel-btn" href="hotel.html?id=${h.id}">Ver disponibilidad</a>
+      </div>
+    </article>
+  `;
+}).join("");
+
 }
 
 /* ------------------- Filtros ------------------- */
