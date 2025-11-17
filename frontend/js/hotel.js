@@ -54,16 +54,52 @@ async function load() {
 
   try {
     const h = await request(`/api/hoteles/${id}`);
+
+    loadWeatherForHotel(h);
     nameEl.textContent = h.nombre || `Hotel #${id}`;
     infoEl.textContent = `${h.direccion || ""} · ${h.estrellas ? "⭐".repeat(h.estrellas) : ""}`;
 
     const rooms = await request(`/api/habitaciones?hotelId=${id}`);
+    // EXTRA: obtener ciudad automáticamente desde la dirección
+    const city = (h.direccion || "").split(",").pop().trim();
+    loadWeather(city);
+
     renderRooms(rooms || []);
   } catch (err) {
     nameEl.textContent = "Error cargando hotel";
     msgEl.textContent = `Error: ${err.message || "No encontrado"}`;
   }
 }
+async function loadWeatherForHotel(hotel) {
+  const weatherBox = document.getElementById("weatherBox");
+  const weatherCityEl = document.getElementById("weatherCity");
+  const iconEl = document.getElementById("weatherIcon");
+  const tempEl = document.getElementById("weatherTemp");
+  const descEl = document.getElementById("weatherDesc");
+  const minmaxEl = document.getElementById("weatherMinMax");
+
+  const city = hotel.direccion.split(",").pop().trim();
+  weatherCityEl.textContent = city;
+
+  try {
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)},PE&units=metric&lang=es&appid=TU_API_KEY_AQUI`
+    );
+    const data = await res.json();
+
+    if (!data.main) throw new Error();
+
+    iconEl.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    tempEl.textContent = `${Math.round(data.main.temp)}°C`;
+    descEl.textContent = data.weather[0].description;
+    minmaxEl.textContent = `Min ${Math.round(data.main.temp_min)}° • Max ${Math.round(data.main.temp_max)}°`;
+
+    weatherBox.style.display = "flex";
+  } catch (e) {
+    weatherBox.style.display = "none";
+  }
+}
+
 
 function renderRooms(items) {
   if (!items.length) { roomsEl.innerHTML = ""; msgEl.textContent = "No hay habitaciones."; return; }
@@ -212,5 +248,37 @@ async function onReservar(habitacionId) {
 
 [inicioEl, finEl].forEach(el => el?.addEventListener("input", () => { dateMsgEl.textContent = ""; }));
 load();
+async function loadWeather(cityName) {
+  const weatherBox = document.getElementById("weatherBox");
+  const cityEl = document.getElementById("weatherCity");
+  const iconEl = document.getElementById("weatherIcon");
+  const tempEl = document.getElementById("weatherTemp");
+  const descEl = document.getElementById("weatherDesc");
+  const minEl = document.getElementById("tempMin");
+  const maxEl = document.getElementById("tempMax");
+
+  try {
+    const r = await fetch(`${API_URL}/api/external/weather?city=${encodeURIComponent(cityName)}`);
+    const data = await r.json();
+
+    if (!data.ok) throw new Error("No data");
+
+    const w = data.weather;
+
+    cityEl.textContent = `${cityName}, ${w.country}`;
+    tempEl.textContent = `${Math.round(w.temp)}°C`;
+    descEl.textContent = w.description;
+    minEl.textContent = `Min: ${Math.round(w.temp_min)}°`;
+    maxEl.textContent = `Max: ${Math.round(w.temp_max)}°`;
+
+    iconEl.src = `https://openweathermap.org/img/wn/${w.icon}@4x.png`;
+
+    weatherBox.classList.remove("hidden");
+
+  } catch (err) {
+    console.warn("No se pudo cargar clima", err);
+    weatherBox.classList.add("hidden");
+  }
+}
 
 

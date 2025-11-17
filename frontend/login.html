@@ -1,3 +1,5 @@
+
+<!--frontend/login.html-->
 <!doctype html>
 <html lang="es">
 <head>
@@ -5,8 +7,114 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Iniciar sesión · ReservaHoteles</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ===== LOGIN GLASSMORPHISM ===== */
+
+    body {
+      background: linear-gradient(135deg, #d6e4ff, #eef3ff, #ffffff);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .auth-container {
+      max-width: 420px;
+      margin: 4rem auto;
+      padding: 2rem;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 32px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.4);
+      animation: fadeUp .6s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-title {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 1.4rem;
+      color: #0b2e6f;
+    }
+
+    /* labels flotantes */
+    .input-group {
+      position: relative;
+      margin-bottom: 1.4rem;
+    }
+
+    .input-group input {
+      width: 100%;
+      font-size: 1rem;
+      padding: 14px 12px 14px 14px;
+      border-radius: 14px;
+      border: 1px solid #c9d6f2;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(4px);
+      transition: .25s;
+    }
+
+    .input-group label {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      font-size: 0.95rem;
+      color: #556;
+      pointer-events: none;
+      transition: .25s;
+      background: transparent;
+      padding: 0 4px;
+    }
+
+    /* floating effect */
+    .input-group input:focus + label,
+    .input-group input:not(:placeholder-shown) + label {
+      top: -6px;
+      font-size: 0.75rem;
+      color: #0d47a1;
+      background: #fff;
+      border-radius: 4px;
+    }
+
+    .auth-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 14px;
+      background: #0d47a1;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: .25s;
+      box-shadow: 0 6px 16px rgba(13,71,161,.25);
+    }
+
+    .auth-btn:hover {
+      background: #083a84;
+      box-shadow: 0 8px 20px rgba(13,71,161,.35);
+    }
+
+    .auth-footer {
+      margin-top: 1rem;
+      text-align: center;
+      color: #556;
+    }
+
+    .auth-footer a {
+      color: #0f3ea3;
+      font-weight: 600;
+    }
+  </style>
 </head>
-<body class="container">
+
+<body>
+
   <header class="site-header">
     <div class="header-grid">
       <div class="brand">
@@ -14,32 +122,47 @@
         <strong>ReservaHoteles</strong>
       </div>
       <nav class="nav">
-        <a href="index.html">Inicio</a>
-        <a href="hotels.html">Hoteles</a>
-        <a href="reservations.html" data-show-when="logged">Mis reservas</a>
-        <a href="admin.html" data-show-when="admin">Admin</a>
-        <a href="login.html" data-hide-when="logged">Login</a>
-        <a href="register.html" data-hide-when="logged">Registro</a>
-        <a href="#" data-show-when="logged" data-action="logout">Salir</a>
+        <a class="chip" href="index.html">Inicio</a>
+        <a class="chip" href="hotels.html">Hoteles</a>
+        <a class="chip" href="login.html">Login</a>
+        <a class="chip" href="register.html">Registro</a>
       </nav>
     </div>
   </header>
 
-  <main style="max-width:420px;margin:2rem auto;">
-    <h1>Iniciar sesión</h1>
-    <form id="loginForm" class="card" style="padding:1rem;">
-      <label for="email">Email</label>
-      <input id="email" type="email" required placeholder="tucorreo@dominio.com" />
-      <label for="password">Contraseña</label>
-      <input id="password" type="password" required placeholder="••••••••" />
-      <button class="btn" type="submit" style="margin-top:1rem;">Entrar</button>
-      <p id="loginMsg" class="muted" style="margin-top:.5rem;"></p>
-    </form>
+  <main>
+    <div class="auth-container">
+
+      <h1 class="auth-title">Iniciar sesión</h1>
+
+      <form id="loginForm">
+
+        <div class="input-group">
+          <input id="email" type="email" required placeholder=" " />
+          <label for="email">Correo electrónico</label>
+        </div>
+
+        <div class="input-group">
+          <input id="password" type="password" required placeholder=" " />
+          <label for="password">Contraseña</label>
+        </div>
+
+        <button class="auth-btn" type="submit">Entrar</button>
+
+        <p id="loginMsg" class="muted" style="margin-top:.7rem;text-align:center;"></p>
+      </form>
+
+      <p class="auth-footer">
+        ¿No tienes cuenta? <a href="register.html">Regístrate aquí</a>
+      </p>
+
+    </div>
   </main>
 
-  <!-- IMPORTANTE: módulos -->
   <script type="module" src="js/config.js"></script>
   <script type="module" src="js/session.js"></script>
   <script type="module" src="js/login.js"></script>
+
 </body>
 </html>
+

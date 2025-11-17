@@ -38,6 +38,22 @@
       </div>
       <p id="dateMsg" class="muted" style="margin-top:.5rem;"></p>
     </section>
+    
+    <section id="weatherBox" class="weather-card hidden">
+      <div class="weather-left">
+        <img id="weatherIcon" class="weather-icon" src="" alt="Clima">
+      </div>
+      <div class="weather-right">
+        <h3 id="weatherCity"></h3>
+        <div class="temp-row">
+          <span id="weatherTemp" class="temp-main"></span>
+          <span id="weatherDesc" class="temp-desc"></span>
+        </div>
+        <div class="temp-minmax">
+          <span id="tempMin"></span> · <span id="tempMax"></span>
+        </div>
+      </div>
+    </section>
 
     <h2 style="margin-top:1rem;">Habitaciones</h2>
     <div id="rooms" class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;"></div>

@@ -1,3 +1,4 @@
+<!--fronted/register.html-->
 <!doctype html>
 <html lang="es">
 <head>
@@ -5,42 +6,121 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Registro · ReservaHoteles</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Reutilizamos exactamente los mismos estilos del login */
+    body {
+      background: linear-gradient(135deg, #d6e4ff, #eef3ff, #ffffff);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .auth-container {
+      max-width: 420px;
+      margin: 4rem auto;
+      padding: 2rem;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.28);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 32px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.4);
+      animation: fadeUp .6s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .auth-title {
+      text-align: center;
+      font-size: 2.2rem;
+      margin-bottom: 1.4rem;
+      color: #0b2e6f;
+      font-weight: 700;
+    }
+    .input-group { position: relative; margin-bottom: 1.4rem; }
+    .input-group input {
+      width: 100%; padding: 14px 12px;
+      border-radius: 14px;
+      border: 1px solid #c9d6f2;
+      background: rgba(255,255,255,0.6);
+      transition: .25s;
+    }
+    .input-group label {
+      position: absolute; left: 14px; top: 14px;
+      font-size: 0.95rem; pointer-events: none;
+      color: #556; transition: .25s;
+    }
+    .input-group input:focus + label,
+    .input-group input:not(:placeholder-shown) + label {
+      top: -6px; font-size: 0.75rem; color: #0d47a1;
+      background: #fff; border-radius: 4px;
+    }
+    .auth-btn {
+      width: 100%; padding: 12px;
+      border-radius: 14px; border: none;
+      background: #0d47a1; color: #fff;
+      font-weight: 700; font-size: 1.1rem;
+      cursor: pointer; transition: .25s;
+      box-shadow: 0 6px 16px rgba(13,71,161,.25);
+    }
+    .auth-btn:hover { background:#083a84; box-shadow:0 8px 20px rgba(13,71,161,.35); }
+    .auth-footer { text-align:center; margin-top: 1rem; }
+  </style>
 </head>
-<body class="container">
-  <header class="site-header">
-    <div class="header-grid">
-      <div class="brand">
-        <img src="img/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
-        <strong>ReservaHoteles</strong>
-      </div>
-      <nav class="nav">
-        <a href="index.html">Inicio</a>
-        <a href="hotels.html">Hoteles</a>
-        <a href="reservations.html" data-show-when="logged">Mis reservas</a>
-        <a href="admin.html" data-show-when="admin">Admin</a>
-        <a href="login.html" data-hide-when="logged">Login</a>
-        <a href="register.html" data-hide-when="logged">Registro</a>
-        <a href="#" data-show-when="logged" data-action="logout">Salir</a>
-      </nav>
-    </div>
-  </header>
 
-  <main style="max-width:420px;margin:2rem auto;">
-    <h1>Registro</h1>
-    <form id="registerForm" class="card" style="padding:1rem;">
-      <input id="nombre" type="text" placeholder="Nombre" required />
-      <input id="email" type="email" placeholder="Correo" required />
-      <input id="password" type="password" placeholder="Contraseña" minlength="6" required />
-      <button class="btn" type="submit" style="margin-top:1rem;">Registrar</button>
-      <p id="regMsg" class="muted" style="margin-top:.5rem;"></p>
+<body>
+
+<header class="site-header">
+  <div class="header-grid">
+    <div class="brand">
+      <img src="img/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+      <strong>ReservaHoteles</strong>
+    </div>
+    <nav class="nav">
+      <a class="chip" href="index.html">Inicio</a>
+      <a class="chip" href="hotels.html">Hoteles</a>
+      <a class="chip" href="login.html">Login</a>
+      <a class="chip" href="register.html">Registro</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="auth-container">
+
+    <h1 class="auth-title">Crear cuenta</h1>
+
+    <form id="registerForm">
+
+      <div class="input-group">
+        <input id="nombre" type="text" required placeholder=" " />
+        <label for="nombre">Nombre completo</label>
+      </div>
+
+      <div class="input-group">
+        <input id="email" type="email" required placeholder=" " />
+        <label for="email">Correo electrónico</label>
+      </div>
+
+      <div class="input-group">
+        <input id="password" type="password" minlength="6" required placeholder=" " />
+        <label for="password">Contraseña (mín. 6 caracteres)</label>
+      </div>
+
+      <button class="auth-btn" type="submit">Registrar</button>
+
+      <p id="regMsg" class="muted" style="margin-top:.7rem;text-align:center;"></p>
+
     </form>
 
-    <p style="margin-top:1rem;">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
-  </main>
+    <p class="auth-footer">¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
 
-  <!-- IMPORTANTE: módulos -->
-  <script type="module" src="js/config.js"></script>
-  <script type="module" src="js/session.js"></script>
-  <script type="module" src="js/register.js"></script>
+  </div>
+</main>
+
+<script type="module" src="js/config.js"></script>
+<script type="module" src="js/session.js"></script>
+<script type="module" src="js/register.js"></script>
+
 </body>
 </html>
+

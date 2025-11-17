@@ -21,7 +21,7 @@ function getHotelImage(hotel) {
 
 const listEl  = document.getElementById("hotelsList");
 const searchEl = document.getElementById("search");
-
+const weatherBox = document.getElementById("weatherBox");
 // Filtros UI
 const cityChipsEl = document.getElementById("cityChips");
 const starChipsEl = document.getElementById("starChips");
@@ -67,6 +67,74 @@ async function minPriceForHotel(hotelId) {
   } catch {
     return { min: null, count: 0 };
   }
+}
+/*CLIMA – usando /api/external/weather*/
+
+async function loadWeatherForCity(city) {
+  if (!weatherBox) return;
+
+  const cleanCity = (city || "").trim();
+  if (!cleanCity) {
+    weatherBox.innerHTML = "";
+    return;
+  }
+
+  weatherBox.innerHTML = `<p class="muted">Cargando clima en ${cleanCity}…</p>`;
+
+  try {
+    const res = await fetch(
+      `${API_URL}/api/external/weather?city=${encodeURIComponent(cleanCity)}`
+    );
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+
+    if (!data || data.error) {
+      weatherBox.innerHTML = `<p class="muted">No se pudo obtener el clima para ${cleanCity}.</p>`;
+      return;
+    }
+
+    const temp = Math.round(data.temp);
+    const tMin = Math.round(data.temp_min);
+    const tMax = Math.round(data.temp_max);
+    const icon = data.icon;
+    const desc = (data.description || "").toLowerCase();
+    const location = [data.name, data.country].filter(Boolean).join(", ");
+
+    weatherBox.innerHTML = `
+      <div class="weather-card">
+        <div class="weather-main">
+          <span class="weather-city">Clima hoy en ${location}</span>
+          <span class="weather-temp">${temp}°C</span>
+        </div>
+        <div class="weather-extra">
+          ${icon ? `<img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${desc}" />` : ""}
+          <div>
+            <div class="weather-desc">${desc}</div>
+            <div class="weather-range">Min: ${tMin}° · Max: ${tMax}°</div>
+          </div>
+        </div>
+      </div>
+    `;
+  } catch (err) {
+    console.error("Weather error:", err);
+    weatherBox.innerHTML = `<p class="muted">No se pudo cargar el clima para ${cleanCity}.</p>`;
+  }
+}
+
+// Decide qué ciudad usar para el clima (según filtros)
+function getCurrentCityForWeather() {
+  // si hay ciudades seleccionadas, usamos la primera
+  if (state.cities.size) {
+    return Array.from(state.cities)[0];
+  }
+  // si no, usamos la ciudad del primer hotel de la lista completa
+  const first = state.all[0];
+  return first ? cityFromAddress(first.direccion) : "";
+}
+
+function updateWeatherFromFilters() {
+  const city = getCurrentCityForWeather();
+  loadWeatherForCity(city);
 }
 
 function renderRows(list) {
@@ -124,10 +192,13 @@ function buildCityChips(all) {
 
   cityChipsEl.querySelectorAll("button[data-city]").forEach(btn => {
     const val = decodeURIComponent(btn.dataset.city);
+
     btn.addEventListener("click", () => {
-      if (state.cities.has(val)) state.cities.delete(val); else state.cities.add(val);
+      if (state.cities.has(val)) state.cities.delete(val); 
+      else state.cities.add(val);
       btn.classList.toggle("active");
       applyFilter();
+      updateWeatherFromFilters(); // 👈 actualizar clima al cambiar ciudad
     });
   });
 }
@@ -212,6 +283,7 @@ btnReset?.addEventListener("click", () => {
   if (searchEl) searchEl.value = "";
   state.q = "";
   applyFilter();
+  updateWeatherFromFilters(); // 👈 clima según la lista sin filtros
 });
 
 /* --------------- Carga inicial --------------- */
@@ -231,8 +303,10 @@ async function loadHotels() {
   buildStarChips(state.all);
   hookPrice();
   applyFilter();
+  updateWeatherFromFilters(); // 👈 clima inicial
 }
 loadHotels();
+
 // ===============================
 // MAPA – Ver ubicación
 // ===============================

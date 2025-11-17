@@ -1,3 +1,4 @@
+/*frontend/css/style.css*/
 /* ====== Reset & tokens ====== */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -627,6 +628,400 @@ h3{ font-size:18px; }
   border: 1px solid #007bff;
   color: #007bff;
 }
+/* ===== Clima en hoteles ===== */
+.weather-box {
+  margin: 0 auto 1.5rem;
+  max-width: 960px;
+}
 
+.weather-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  background: #f3f6ff;
+  box-shadow: 0 8px 24px rgba(15, 35, 95, 0.08);
+  font-size: 0.9rem;
+}
+
+.weather-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.weather-city {
+  font-weight: 600;
+  color: #1b2559;
+}
+
+.weather-temp {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.weather-extra {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.weather-extra img {
+  width: 42px;
+  height: 42px;
+}
+
+.weather-desc {
+  text-transform: capitalize;
+}
+
+.weather-range {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+/* ===== TARJETA DE CLIMA ===== */
+
+.weather-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem;
+  margin: 1rem 0;
+  background: linear-gradient(135deg, #ffffff, #e6f0ff);
+  border-radius: 14px;
+  box-shadow: 0px 4px 15px rgba(0,0,0,0.08);
+}
+
+.weather-left img {
+  width: 80px;
+  height: 80px;
+}
+
+.weather-right h3 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.weather-location {
+  font-weight: 600;
+  margin-top: .3rem;
+}
+/* Tarjeta premium del clima */
+.weather-card {
+  margin-top: 1.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  backdrop-filter: blur(16px);
+  background: linear-gradient(135deg, rgba(255,255,255,0.30), rgba(255,255,255,0.12));
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: 0 25px 35px rgba(0,0,0,0.08);
+  transition: all .3s ease;
+  opacity: 1;
+}
+
+.weather-card.hidden {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.weather-left {
+  flex: 0 0 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.weather-icon {
+  width: 80px;
+  height: 80px;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+.weather-right {
+  margin-left: 1rem;
+  flex-grow: 1;
+}
+
+.temp-main {
+  font-size: 2.6rem;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.temp-desc {
+  font-size: 1.1rem;
+  color: #555;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.temp-minmax {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  color: #444;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+  .weather-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  .weather-right {
+    margin: 0;
+  }
+}
+
+/* =========================================================
+   AUTH (LOGIN / REGISTER) – GLASSMORPHISM PREMIUM
+   ========================================================= */
+
+.auth-body{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at top left, rgba(56,189,248,.15), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(59,130,246,.18), transparent 50%),
+    linear-gradient(135deg, #020617 0%, #0b1f3b 40%, #020617 100%);
+}
+
+/* que el header no quede pegado arriba */
+.auth-body .site-header{
+  background: rgba(15,23,42,0.8);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(148,163,184,0.35);
+}
+
+/* texto header en modo auth */
+.auth-body .brand strong{
+  color:#e5edff;
+}
+.auth-body .nav .chip{
+  background: rgba(15,23,42,0.8);
+  border-color: rgba(148,163,184,0.4);
+  color:#e5edff;
+}
+.auth-body .nav .chip.is-active{
+  background:#2563eb;
+  border-color:#2563eb;
+}
+
+/* contenedor principal */
+.auth-page{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:32px 16px 40px;
+}
+
+/* layout de tarjeta doble (texto + form) */
+.auth-shell{
+  width:100%;
+  max-width: 980px;
+  display:grid;
+  grid-template-columns: minmax(0,1.15fr) minmax(0,1fr);
+  gap:24px;
+}
+
+/* lado de texto */
+.auth-side{
+  color:#e5edff;
+  padding:24px 20px;
+}
+
+.auth-side-title{
+  font-size: 1.9rem;
+  font-weight: 700;
+  margin:0 0 .75rem;
+}
+
+.auth-side-text{
+  margin:0 0 .75rem;
+  color:#cbd5f5;
+  font-size:.98rem;
+}
+
+.auth-side-list{
+  list-style:none;
+  padding:0;
+  margin:0 0 1rem;
+  color:#d1ddff;
+  font-size:.9rem;
+}
+.auth-side-list li{ margin-bottom:.25rem; }
+
+.auth-side-badge{
+  display:inline-flex;
+  align-items:center;
+  padding:.45rem .75rem;
+  border-radius:999px;
+  border:1px solid rgba(148,163,184,0.45);
+  background: rgba(15,23,42,0.8);
+  font-size:.8rem;
+  color:#e5edff;
+}
+
+/* tarjeta glass del formulario */
+.auth-card.glass{
+  background: radial-gradient(circle at top left, rgba(248,250,252,0.22), rgba(15,23,42,0.86));
+  border-radius: 22px;
+  padding: 22px 22px 20px;
+  border:1px solid rgba(148,163,184,0.45);
+  box-shadow:
+    0 24px 60px rgba(15,23,42,0.85),
+    0 0 0 1px rgba(15,23,42,0.9);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  color:#e5edff;
+}
+
+.auth-title{
+  font-size:1.7rem;
+  margin:0 0 .25rem;
+}
+
+.auth-subtitle{
+  margin:0 0 1.1rem;
+  font-size:.92rem;
+  color:#cbd5f5;
+}
+
+/* formulario */
+.auth-form{
+  display:flex;
+  flex-direction:column;
+  gap:.5rem;
+}
+
+/* campo flotante */
+.field{
+  position:relative;
+  margin-bottom:.4rem;
+}
+
+.field input{
+  width:100%;
+  padding: 14px 12px 10px;
+  border-radius: 14px;
+  border:1px solid rgba(148,163,184,0.6);
+  background: rgba(15,23,42,0.82);
+  color:#e5edff;
+  outline:none;
+  font-size:.95rem;
+  transition:border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .05s ease;
+}
+
+.field input::placeholder{
+  color:transparent; /* usamos el label como placeholder visual */
+}
+
+.field input:focus{
+  border-color:#60a5fa;
+  box-shadow: 0 0 0 1px rgba(37,99,235,0.65), 0 0 0 6px rgba(37,99,235,0.30);
+  background: rgba(15,23,42,0.96);
+  transform: translateY(-1px);
+}
+
+/* label flotante */
+.field label{
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform: translateY(-50%);
+  padding:0 4px;
+  font-size:.88rem;
+  color:#94a3b8;
+  pointer-events:none;
+  background: transparent;
+  transition: all .16s ease;
+}
+
+/* cuando hay texto o focus, levantamos el label */
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label{
+  top:4px;
+  font-size:.7rem;
+  color:#bfdbfe;
+  background: rgba(15,23,42,0.98);
+  border-radius:999px;
+}
+
+/* botón del auth */
+.auth-btn{
+  margin-top:.4rem;
+  width:100%;
+  justify-content:center;
+  border-radius:14px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  box-shadow:
+    0 12px 30px rgba(37,99,235,0.55),
+    0 0 0 1px rgba(191,219,254,0.15);
+}
+.auth-btn:hover{
+  filter:brightness(1.05);
+}
+.auth-btn:active{
+  transform: translateY(1px);
+  box-shadow:0 6px 16px rgba(37,99,235,0.45);
+}
+
+/* mensajes y enlaces */
+.auth-msg{
+  min-height: 1.1rem;
+  margin:.4rem 0 0;
+  font-size:.85rem;
+  color:#fbbf24; /* amarillo suave para feedback */
+}
+
+.auth-helper{
+  margin-top:.6rem;
+  font-size:.86rem;
+  color:#cbd5f5;
+}
+
+.auth-link{
+  color:#93c5fd;
+  font-weight:600;
+  text-decoration:none;
+}
+.auth-link:hover{
+  text-decoration:underline;
+}
+
+/* RESPONSIVE: en móvil, apilamos */
+@media (max-width: 840px){
+  .auth-shell{
+    max-width: 480px;
+    grid-template-columns: minmax(0,1fr);
+  }
+  .auth-side{
+    display:none;
+  }
+}
+
+@media (max-width: 600px){
+  .auth-page{
+    padding:18px 12px 28px;
+  }
+  .auth-card.glass{
+    padding:18px 16px;
+    border-radius:18px;
+  }
+}
 
 
