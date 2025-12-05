@@ -85,3 +85,8 @@ router.get("/weather", async (req, res) => {
 });
 
 module.exports = router;
+
+
+
+
+
