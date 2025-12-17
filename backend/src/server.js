@@ -14,9 +14,9 @@ const app = express();
 
 // Middlewares base
 app.use(cors({
-  origin: "*",
+  origin: "https://peppy-axolotl-04f880.netlify.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  credentials:true
 }));
 app.use(express.json());
 app.use(
